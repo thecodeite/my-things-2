@@ -1,0 +1,74 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type List {
+  appId: String!
+  createdAt: String
+  description: String
+  id: String!
+  listItem: ListItem
+  listItemId: String
+  listItems: [ListItem!]
+  name: String!
+  ownerId: String!
+  rules: [ListSpecRule!]
+  tags: [String]
+  updatedAt: String
+}
+
+type ListItem {
+  createdAt: String
+  description: String
+  details: [NameValuePair!]
+  id: String
+  listId: String
+  name: String
+  tags: [String]
+  updatedAt: String
+}
+
+input ListItemInput {
+  description: String
+  details: [NameValuePairInput!]
+  name: String!
+  tags: [String!]
+}
+
+type ListSpecRule {
+  backing: String!
+  backingName: String!
+  data: String
+  name: String!
+  prompt: String!
+  required: Boolean!
+  ruleType: String!
+}
+
+type Mutation {
+  createList(listName: String!): List
+  createListItem(listId: String!, name: String!): ListItem
+  deleteListItem(itemId: String!, listId: String!): Boolean
+  setListRule(backing: String!, backingName: String!, data: String, listId: String!, name: String!, prompt: String!, required: Boolean!, ruleType: String!): Boolean
+  updateList(description: String, id: String!, name: String, tags: [String]): Boolean
+  updateListItem(item: ListItemInput!, itemId: String!, listId: String!): Boolean
+}
+
+type NameValuePair {
+  name: String!
+  value: String!
+}
+
+input NameValuePairInput {
+  name: String!
+  value: String
+}
+
+type Query {
+  list(id: String!, listItemId: String): List
+  listItemById(itemId: String!, listId: String!): ListItem
+  lists(descending: Boolean, orderBy: String): [List]
+  listsById(ids: [String!]!): [List]
+  stats: String!
+}

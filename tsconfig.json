@@ -23,6 +23,14 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-    }
+    },
+
+    /* plugins */
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./schema.graphql"
+      }
+    ]
   }
 }

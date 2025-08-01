@@ -1,19 +1,49 @@
 import { createRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
+import { graphql } from '../graphql/gql'
 
 import type { RootRoute } from '@tanstack/react-router'
 
+import { execute } from '../graphql/execute'
+
+const ListsQuery = graphql(/* GraphQL */ `
+  query Lists {
+    lists {
+      id
+      name
+      listItems {
+        id
+      }
+    }
+  }
+`)
+
 function TanStackQueryDemo() {
-  const { data } = useQuery({
-    queryKey: ['todos'],
-    queryFn: () =>
-      Promise.resolve([
-        { id: 1, name: 'Alice' },
-        { id: 2, name: 'Bob' },
-        { id: 3, name: 'Charlie' },
-      ]),
-    initialData: [],
+   const { data } = useQuery({
+    queryKey: ['lists'],
+    queryFn: () => execute(ListsQuery)
   })
+
+  console.log('data:', data)
+
+  if (!data || !data.lists) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <span className="text-gray-500">Loading...</span>
+      </div>
+    )
+  }
+
+  const lists = data.lists.filter((list) => list !== null)
+
+  if (lists.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <span className="text-gray-500">No lists found.</span>
+      </div>
+    )
+  } 
+
 
   return (
     <div
@@ -28,12 +58,12 @@ function TanStackQueryDemo() {
           TanStack Query Simple Promise Handling
         </h1>
         <ul className="mb-4 space-y-2">
-          {data.map((todo) => (
+          {lists.map((list) => (
             <li
-              key={todo.id}
+              key={list.id}
               className="bg-white/10 border border-white/20 rounded-lg p-3 backdrop-blur-sm shadow-md"
             >
-              <span className="text-lg text-white">{todo.name}</span>
+              <span className="text-lg text-white">{list.name} ({list.listItems?.length ?? 0})</span>
             </li>
           ))}
         </ul>
