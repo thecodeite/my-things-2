@@ -164,7 +164,7 @@ export type ListItemsQueryVariables = Exact<{
 }>;
 
 
-export type ListItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null, description?: string | null }> | null } | null };
+export type ListItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null };
 
 export type ListsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -198,7 +198,6 @@ export const ListItemsDocument = new TypedDocumentString(`
     listItems {
       id
       name
-      description
     }
   }
 }

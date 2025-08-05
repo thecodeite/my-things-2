@@ -15,18 +15,18 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n        description\n      }\n    }\n  }\n": typeof types.ListItemsDocument,
+    "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": typeof types.ListItemsDocument,
     "\n  query Lists {\n    lists {\n      id\n      name\n      listItems {\n        id\n      }\n    }\n  }\n": typeof types.ListsDocument,
 };
 const documents: Documents = {
-    "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n        description\n      }\n    }\n  }\n": types.ListItemsDocument,
+    "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.ListItemsDocument,
     "\n  query Lists {\n    lists {\n      id\n      name\n      listItems {\n        id\n      }\n    }\n  }\n": types.ListsDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n        description\n      }\n    }\n  }\n"): typeof import('./graphql').ListItemsDocument;
+export function graphql(source: "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n"): typeof import('./graphql').ListItemsDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

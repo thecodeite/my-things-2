@@ -17,4 +17,9 @@ export default (parentRoute: RootRoute) =>
     path: "/all-lists",
     component: AllListsRoute,
     getParentRoute: () => parentRoute,
+    loader: () => {
+      return {
+        crumbs: [{ text: "All Lists", link: "/all-lists" }],
+      };
+    },
   });
