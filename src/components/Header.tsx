@@ -13,16 +13,11 @@ import {
 export default function Header() {
   const matches = useMatches();
 
-  const matchesWithCrumbs = matches
-    .filter((match) => match.loaderData?.crumbs)
-    .flatMap(({ pathname, loaderData }) =>
-      loaderData?.crumbs.map((crumb) => ({
-        href: crumb.link || pathname,
-        label: crumb.text,
-      })),
-    );
+  const withCrumbs =
+    matches.find((match) => match.loaderData?.crumbs !== undefined)?.loaderData
+      ?.crumbs ?? [];
 
-  const [page, ...rest] = matchesWithCrumbs.reverse();
+  const [page, ...rest] = withCrumbs.reverse();
   rest.reverse();
 
   return (
@@ -35,22 +30,27 @@ export default function Header() {
             </BreadcrumbLink>
           </BreadcrumbItem>
           {rest.map((item) => (
-            <React.Fragment key={item?.href}>
+            <React.Fragment key={item?.text}>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-  
                 <BreadcrumbLink asChild>
-                  <Link to={item?.href}>{item?.label}</Link>
+                  <Link {...item.link}>{item?.text}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </React.Fragment>
           ))}
-          <BreadcrumbSeparator />
-          <BreadcrumbPage>
-            <BreadcrumbItem>
-              <BreadcrumbLink href={page?.href}>{page?.label}</BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbPage>
+          {page && (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbPage>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link {...page.link}>{page?.text}</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </BreadcrumbPage>
+            </>
+          )}
         </BreadcrumbList>
       </Breadcrumb>
     </header>
@@ -71,3 +71,7 @@ export default function Header() {
 //     </header>
 //   )
 // }
+
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
+}

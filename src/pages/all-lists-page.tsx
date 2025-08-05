@@ -1,28 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
+import type { AllListsQuery } from "@/graphql/graphql";
 import { Link } from "@tanstack/react-router";
 import { graphql } from "../graphql/gql";
 
-import { execute } from "../graphql/execute";
-
-const ListsQuery = graphql(/* GraphQL */ `
-  query Lists {
+export const AllListsPageQuery = graphql(/* GraphQL */ `
+  query AllLists {
     lists {
       id
       name
       listItems {
         id
+        name
       }
     }
   }
 `);
 
-export function AllListsPage() {
-  const { data } = useQuery({
-    queryKey: ["lists"],
-    queryFn: () => execute(ListsQuery),
-  });
+interface AllListsPageProps {
+  result?: AllListsQuery;
+}
 
-  if (!data || !data.lists) {
+export function AllListsPage({ result }: AllListsPageProps) {
+  if (!result || !result.lists) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <span className="text-gray-500">Loading...</span>
@@ -30,7 +28,7 @@ export function AllListsPage() {
     );
   }
 
-  const lists = data.lists.filter((list) => list !== null);
+  const lists = result.lists.filter((list) => list !== null);
 
   if (lists.length === 0) {
     return (

@@ -15,22 +15,28 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": typeof types.ListItemsDocument,
-    "\n  query Lists {\n    lists {\n      id\n      name\n      listItems {\n        id\n      }\n    }\n  }\n": typeof types.ListsDocument,
+    "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": typeof types.AllListsDocument,
+    "\n  query ListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": typeof types.ListWithItemsDocument,
+    "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n": typeof types.SingleListItemDocument,
 };
 const documents: Documents = {
-    "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.ListItemsDocument,
-    "\n  query Lists {\n    lists {\n      id\n      name\n      listItems {\n        id\n      }\n    }\n  }\n": types.ListsDocument,
+    "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.AllListsDocument,
+    "\n  query ListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.ListWithItemsDocument,
+    "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n": types.SingleListItemDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query ListItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n"): typeof import('./graphql').ListItemsDocument;
+export function graphql(source: "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n"): typeof import('./graphql').AllListsDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Lists {\n    lists {\n      id\n      name\n      listItems {\n        id\n      }\n    }\n  }\n"): typeof import('./graphql').ListsDocument;
+export function graphql(source: "\n  query ListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n"): typeof import('./graphql').ListWithItemsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n"): typeof import('./graphql').SingleListItemDocument;
 
 
 export function graphql(source: string) {

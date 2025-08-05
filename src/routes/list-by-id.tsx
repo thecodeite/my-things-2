@@ -1,25 +1,17 @@
-import { AllItemsPage } from "@/pages/all-items-page";
+import { ListByIdPage, ListWithItemsPageQuery } from "@/pages/list-by-id-page";
+import type { Crumbs } from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
-import { type RootRoute, createRoute, useParams } from "@tanstack/react-router";
+import {
+  type RootRoute,
+  createRoute,
+  linkOptions,
+  useParams,
+} from "@tanstack/react-router";
 import { execute, queryClient } from "../graphql/execute";
-import { graphql } from "../graphql/gql";
-
-const ListItemsQuery = graphql(/* GraphQL */ `
-  query ListItems($id: String!) {
-    list(id: $id) {
-      id
-      name
-      listItems {
-        id
-        name
-      }
-    }
-  }
-`);
 
 const query = (listId: string) => ({
   queryKey: [`lists:${listId}`],
-  queryFn: () => execute(ListItemsQuery, { id: listId }),
+  queryFn: () => execute(ListWithItemsPageQuery, { id: listId }),
 });
 
 function ListByIdRoute() {
@@ -28,16 +20,7 @@ function ListByIdRoute() {
 
   const { data } = useQuery(query(listId));
 
-  const list = {
-    id: data?.list?.id ?? "",
-    name: data?.list?.name ?? "",
-  };
-  const items = data?.list?.listItems?.map((item) => ({
-    id: item.id ?? "",
-    name: item.name ?? "",
-  }));
-
-  return <AllItemsPage list={list} items={items} />;
+  return <ListByIdPage result={data} />;
 }
 
 export default (parentRoute: RootRoute) =>
@@ -50,11 +33,19 @@ export default (parentRoute: RootRoute) =>
       const data = await queryClient.fetchQuery(query(listId));
       const listName = data?.list?.name ?? "List";
 
+      const crumbs: Crumbs = [
+        {
+          text: "All Lists",
+          link: linkOptions({ to: "/all-lists" }),
+        },
+        {
+          text: listName,
+          link: linkOptions({ to: "/list/$listId", params: { listId } }),
+        },
+      ];
+
       return {
-        crumbs: [
-          { text: "All Lists", link: "/all-lists" },
-          { text: listName, link: `/list/${listId}` },
-        ],
+        crumbs,
       };
     },
   });

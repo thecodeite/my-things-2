@@ -9,7 +9,6 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import allLists from "./routes/all-lists.tsx";
-import TanStackQueryDemo from "./routes/demo.tanstack-query.tsx";
 import listById from "./routes/list-by-id.tsx";
 
 import Header from "./components/Header";
@@ -23,6 +22,7 @@ import reportWebVitals from "./reportWebVitals.ts";
 
 import App from "./App.tsx";
 import editListById from "./routes/edit-list-by-id.tsx";
+import viewItemById from "./routes/view-item-by-id.tsx";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -44,9 +44,9 @@ const indexRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  TanStackQueryDemo(rootRoute),
   allLists(rootRoute),
   listById(rootRoute),
+  viewItemById(rootRoute), // Ensure this is after listById to avoid conflicts
   editListById(rootRoute), // Ensure this is after listById to avoid conflicts
 ]);
 

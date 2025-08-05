@@ -1,28 +1,34 @@
+import { LoadingBanner } from "@/components/LoadingBanner";
+import { graphql } from "@/graphql";
+import type { ListWithItemsQuery } from "@/graphql/graphql";
 import { Link } from "@tanstack/react-router";
 
-interface AllItemsPageProps {
-  list: {
-    id: string;
-    name: string;
-  };
+export const ListWithItemsPageQuery = graphql(/* GraphQL */ `
+  query ListWithItems($id: String!) {
+    list(id: $id) {
+      id
+      name
+      listItems {
+        id
+        name
+      }
+    }
+  }
+`);
 
-  items?: Array<{
-    id: string;
-    name: string;
-  }>;
+interface ListByIdPageProps {
+  result?: ListWithItemsQuery;
 }
 
-export function AllItemsPage({ list, items }: AllItemsPageProps) {
-  if (!items) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <span className="text-gray-500">Loading...</span>
-      </div>
-    );
+export function ListByIdPage({ result }: ListByIdPageProps) {
+  if (!result) {
+    return <LoadingBanner />;
   }
 
+  const list = result.list ?? { id: "", name: "Unknown List" };
+
   return (
-    <div className="flex flex-col min-h-screen  p-4 max-w-128">
+    <div className="flex flex-col min-h-screen p-4 max-w-128">
       <div className="flex justify-between space-y-4 w-full">
         <Link
           to={"/all-lists"}
@@ -41,7 +47,7 @@ export function AllItemsPage({ list, items }: AllItemsPageProps) {
         </Link>
       </div>
       <ul className="flex flex-col space-y-2">
-        {items.map((item) => (
+        {(result.list?.listItems ?? []).map((item) => (
           <li
             key={item.id}
             className={`
@@ -50,8 +56,8 @@ export function AllItemsPage({ list, items }: AllItemsPageProps) {
               `}
           >
             <Link
-              to={"/list/$listId"}
-              params={{ listId: item.id ?? "" }}
+              to={"/list/$listId/item/$itemId"}
+              params={{ listId: result.list?.id ?? "", itemId: item.id ?? "" }}
               className="flex justify-between "
             >
               <div className="text-lg text-black">{item.name}</div>
