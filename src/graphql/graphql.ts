@@ -159,6 +159,13 @@ export type QueryListsByIdArgs = {
   ids: Array<Scalars['String']['input']>;
 };
 
+export type ListItemsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ListItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null, description?: string | null }> | null } | null };
+
 export type ListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -183,6 +190,19 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
+export const ListItemsDocument = new TypedDocumentString(`
+    query ListItems($id: String!) {
+  list(id: $id) {
+    id
+    name
+    listItems {
+      id
+      name
+      description
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ListItemsQuery, ListItemsQueryVariables>;
 export const ListsDocument = new TypedDocumentString(`
     query Lists {
   lists {
