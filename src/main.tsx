@@ -23,6 +23,7 @@ import reportWebVitals from "./reportWebVitals.ts";
 import App from "./App.tsx";
 import editItemById from "./routes/edit-item-by-id.tsx";
 import editListById from "./routes/edit-list-by-id.tsx";
+import editListItemById from "./routes/edit-list-item-by-id.tsx";
 import viewItemById from "./routes/view-item-by-id.tsx";
 
 const rootRoute = createRootRoute({
@@ -50,6 +51,7 @@ const routeTree = rootRoute.addChildren([
   viewItemById(rootRoute), // Ensure this is after listById to avoid conflicts
   editItemById(rootRoute), // Ensure this is after viewItemById to avoid conflicts
   editListById(rootRoute), // Ensure this is after listById to avoid conflicts
+  editListItemById(rootRoute), // Ensure this is after listById to avoid conflicts
 ]);
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();

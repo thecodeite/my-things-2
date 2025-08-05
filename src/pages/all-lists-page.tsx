@@ -1,5 +1,7 @@
+import { Button } from "@/components/ui/button";
 import type { AllListsQuery } from "@/graphql/graphql";
 import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { graphql } from "../graphql/gql";
 
 export const AllListsPageQuery = graphql(/* GraphQL */ `
@@ -42,20 +44,19 @@ export function AllListsPage({ result }: AllListsPageProps) {
     <div className="flex items-start justify-stretch min-h-screen  p-4 max-w-128">
       <ul className="flex flex-col space-y-2 flex-grow">
         {lists.map((list) => (
-          <li
-            key={list.id}
-            className="border border-black/20 bg-gray-200 rounded-lg p-2 pl-4 flex-grow hover:border-black/50 transition-all duration-200 cursor-pointer"
-          >
-            <Link
-              to={"/list/$listId"}
-              params={{ listId: list.id }}
-              className="flex justify-between "
+          <li key={list.id}>
+            <Button
+              asChild
+              variant={"secondary"}
+              className="w-full mb-2 flex justify-between border hover:border-black/50 transition-all duration-200 "
             >
-              <div className="text-lg text-black">
-                {list.name} ({list.listItems?.length ?? 0})
-              </div>
-              <div>&gt;</div>
-            </Link>
+              <Link to={"/list/$listId"} params={{ listId: list.id }}>
+                <div className="text-lg text-black">
+                  {list.name} ({list.listItems?.length ?? 0})
+                </div>
+                <ChevronRight className="size-4 text-gray-500" />
+              </Link>
+            </Button>
           </li>
         ))}
       </ul>

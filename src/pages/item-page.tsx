@@ -1,4 +1,5 @@
 import { JsonDebug } from "@/components/JsonDebug";
+import { NavLink } from "@/components/NavLink";
 import {
   type EditTraitProps,
   TraitEditor,
@@ -117,22 +118,19 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
   return (
     <div className="flex flex-col min-h-screen  p-4 max-w-128">
       <div className="flex justify-between space-y-4 w-full">
-        <Link
-          to={"/list/$listId"}
-          params={{ listId: list.id ?? "" }}
-          className="w-16 text-blue-500 hover:underline mb-4"
-        >
-          &lt; Back
-        </Link>
+        <NavLink direction="back" to={"/list/$listId"} className="w-16">
+          Back
+        </NavLink>
         <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
 
-        <Link
+        <NavLink
+          direction="forward"
           to={"/list/$listId/item/$itemId/edit"}
           params={{ listId: list.id ?? "", itemId: listItem.id ?? "" }}
-          className="w-16 text-blue-500 hover:underline mb-4 text-right"
+          className="w-16"
         >
           Edit
-        </Link>
+        </NavLink>
       </div>
       <Card>
         <CardContent className="space-y-4">
