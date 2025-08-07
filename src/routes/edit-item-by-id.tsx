@@ -14,20 +14,20 @@ const query = (listId: string, itemId: string) => ({
   queryFn: () => execute(SingleListItemPageQuery, { listId, itemId }),
 });
 
-function ViewItemByIdRoute() {
+function EditItemByIdRoute() {
   let { listId, itemId } = useParams({ strict: false });
   listId = listId ?? "";
   itemId = itemId ?? "";
 
   const { data } = useQuery(query(listId, itemId));
 
-  return <ItemByIdPage result={data} mode="view" />;
+  return <ItemByIdPage result={data} mode="edit" />;
 }
 
 export default (parentRoute: RootRoute) =>
   createRoute({
-    path: "/list/$listId/item/$itemId",
-    component: ViewItemByIdRoute,
+    path: "/list/$listId/item/$itemId/edit",
+    component: EditItemByIdRoute,
     getParentRoute: () => parentRoute,
     loader: async ({ params }) => {
       const { listId, itemId } = params;

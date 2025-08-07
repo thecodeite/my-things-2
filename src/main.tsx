@@ -21,6 +21,7 @@ import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
 
 import App from "./App.tsx";
+import editItemById from "./routes/edit-item-by-id.tsx";
 import editListById from "./routes/edit-list-by-id.tsx";
 import viewItemById from "./routes/view-item-by-id.tsx";
 
@@ -47,6 +48,7 @@ const routeTree = rootRoute.addChildren([
   allLists(rootRoute),
   listById(rootRoute),
   viewItemById(rootRoute), // Ensure this is after listById to avoid conflicts
+  editItemById(rootRoute), // Ensure this is after viewItemById to avoid conflicts
   editListById(rootRoute), // Ensure this is after listById to avoid conflicts
 ]);
 

@@ -164,20 +164,20 @@ export type AllListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllListsQuery = { __typename?: 'Query', lists?: Array<{ __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null> | null };
 
-export type ListWithItemsQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type ListWithItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null };
-
 export type SingleListItemQueryVariables = Exact<{
   listId: Scalars['String']['input'];
   itemId: Scalars['String']['input'];
 }>;
 
 
-export type SingleListItemQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, rules?: Array<{ __typename?: 'ListSpecRule', backing: string, backingName: string, data?: string | null, name: string, prompt: string, required: boolean, ruleType: string }> | null, listItem?: { __typename?: 'ListItem', id?: string | null, name?: string | null, tags?: Array<string | null> | null, details?: Array<{ __typename?: 'NameValuePair', name: string, value: string }> | null } | null } | null };
+export type SingleListItemQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, rules?: Array<{ __typename?: 'ListSpecRule', backing: string, backingName: string, data?: string | null, name: string, prompt: string, required: boolean, ruleType: string }> | null, listItem?: { __typename?: 'ListItem', id?: string | null, name?: string | null, description?: string | null, tags?: Array<string | null> | null, details?: Array<{ __typename?: 'NameValuePair', name: string, value: string }> | null } | null } | null };
+
+export type ListWithItemsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ListWithItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -210,18 +210,6 @@ export const AllListsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AllListsQuery, AllListsQueryVariables>;
-export const ListWithItemsDocument = new TypedDocumentString(`
-    query ListWithItems($id: String!) {
-  list(id: $id) {
-    id
-    name
-    listItems {
-      id
-      name
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<ListWithItemsQuery, ListWithItemsQueryVariables>;
 export const SingleListItemDocument = new TypedDocumentString(`
     query SingleListItem($listId: String!, $itemId: String!) {
   list(id: $listId, listItemId: $itemId) {
@@ -239,6 +227,7 @@ export const SingleListItemDocument = new TypedDocumentString(`
     listItem {
       id
       name
+      description
       tags
       details {
         name
@@ -248,3 +237,15 @@ export const SingleListItemDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SingleListItemQuery, SingleListItemQueryVariables>;
+export const ListWithItemsDocument = new TypedDocumentString(`
+    query ListWithItems($id: String!) {
+  list(id: $id) {
+    id
+    name
+    listItems {
+      id
+      name
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ListWithItemsQuery, ListWithItemsQueryVariables>;

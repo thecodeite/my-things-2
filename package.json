@@ -45,6 +45,7 @@
     "jsdom": "^26.0.0",
     "typescript": "^5.9.2",
     "vite": "^6.3.5",
+    "vite-plugin-graphql-codegen": "^3.6.3",
     "vitest": "^3.0.5",
     "web-vitals": "^4.2.4"
   }
