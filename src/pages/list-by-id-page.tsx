@@ -32,9 +32,9 @@ export function ListByIdPage({ result }: ListByIdPageProps) {
 
   return (
     <div className="flex flex-col min-h-screen p-4 max-w-128">
-      <div className="flex justify-between items-center space-y-4 w-full">
-        <NavLink direction="back" to={"/all-lists"} className="w-16">
-          Back
+      <div className="grid grid-cols-[1fr_auto_1fr] items-start space-y-4 w-full">
+        <NavLink direction="back" to={"/all-lists"}>
+          Back to lists
         </NavLink>
 
         <h1 className="text-2xl font-bold mb-4">{list.name}</h1>
@@ -43,9 +43,8 @@ export function ListByIdPage({ result }: ListByIdPageProps) {
           direction="forward"
           to={"/list/$listId/edit"}
           params={{ listId: list.id ?? "" }}
-          className="w-16"
         >
-          Edit
+          Edit List
         </NavLink>
       </div>
 

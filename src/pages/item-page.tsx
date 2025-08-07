@@ -1,15 +1,9 @@
 import { JsonDebug } from "@/components/JsonDebug";
 import { NavLink } from "@/components/NavLink";
-import {
-  type EditTraitProps,
-  TraitEditor,
-  type TraitProps,
-  TraitViewer,
-} from "@/components/Trait";
+import { TraitEditor, type TraitProps, TraitViewer } from "@/components/Trait";
 import { Card, CardContent } from "@/components/ui/card";
 import { graphql } from "@/graphql";
 import type { SingleListItemQuery } from "@/graphql/graphql";
-import { Link } from "@tanstack/react-router";
 
 export const SingleListItemPageQuery = graphql(/* GraphQL */ `
   query SingleListItem($listId: String!, $itemId: String!) {
@@ -47,6 +41,9 @@ interface ItemByIdProps {
 export function ItemByIdPage({ result, mode }: ItemByIdProps) {
   const { list } = result ?? {};
   const { listItem } = list ?? {};
+
+  const listId = list?.id ?? "";
+  const itemId = listItem?.id ?? "";
 
   const makeOnChange = (name: string) => (newValue: string) => {
     // Handle trait change logic here if needed
@@ -116,24 +113,27 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen  p-4 max-w-128">
-      <div className="flex justify-between space-y-4 w-full">
-        <NavLink direction="back" to={"/list/$listId"} className="w-16">
-          Back
+    <div className="flex flex-col min-h-screen p-4 max-w-128">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-start space-y-4 w-full">
+        <NavLink direction="back" to={"/list/$listId"}>
+          Back to List
         </NavLink>
-        <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
+
+        <div className="flex flex-col items-center justify-between">
+          <h2>{list.name}</h2>
+          <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
+        </div>
 
         <NavLink
           direction="forward"
           to={"/list/$listId/item/$itemId/edit"}
-          params={{ listId: list.id ?? "", itemId: listItem.id ?? "" }}
-          className="w-16"
+          params={{ listId, itemId }}
         >
-          Edit
+          Edit Item
         </NavLink>
       </div>
       <Card>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 flex flex-col gap-4">
           {listItem.description && <p>{listItem.description}</p>}
           {allFields.map((field) =>
             field.onChange ? (

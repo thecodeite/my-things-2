@@ -1,18 +1,34 @@
-import type { EditTraitProps } from "../Trait";
+import type { EditTraitProps } from "@/components/Trait";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "../ui/textarea";
 
 export function TextTraitEditor({ trait, rule, onChange }: EditTraitProps) {
   const { prompt, value } = trait;
   const { data } = rule;
 
+  const htmlFor = `html-for-${trait.id}`;
+
   return (
-    <div>
-      <h2 className="text-lg font-bold">{prompt}</h2>
-      <textarea
-        className="w-full p-2 border rounded"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={data === "multi-line" ? 4 : 1}
-      />
+    <div className="grid w-full max-w-sm items-center gap-2">
+      <Label htmlFor={htmlFor} className="font-bold">
+        {prompt}
+      </Label>
+
+      {data === "multi-line" ? (
+        <Textarea
+          id={htmlFor}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      ) : (
+        <Input
+          type="text"
+          id={htmlFor}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
     </div>
   );
 }
