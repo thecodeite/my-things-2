@@ -3,6 +3,7 @@ import {
   type CanMakeEditable,
   attachOnChange,
   makeEditable,
+  unmakeEditable,
 } from "./makeEditable";
 
 export function useEditable<T extends CanMakeEditable>(target: T) {
@@ -18,5 +19,9 @@ export function useEditable<T extends CanMakeEditable>(target: T) {
     };
   }, [editable]);
 
-  return editable;
+  function getData() {
+    return unmakeEditable(editable);
+  }
+
+  return [editable, getData] as const;
 }

@@ -4,9 +4,14 @@ import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { graphql } from "@/graphql";
-import type { EditListWithItemsQuery } from "@/graphql/graphql";
+import { execute } from "@/graphql/execute";
+import type {
+  EditListWithItemsQuery,
+  UpdateListMutationVariables,
+} from "@/graphql/graphql";
 import { useEditable } from "@/lib/useEditable";
 import { Label } from "@radix-ui/react-label";
+import { useMutation } from "@tanstack/react-query";
 
 export const EditListWithItemsPageQuery = graphql(/* GraphQL */ `
   query EditListWithItems($id: String!) {
@@ -29,20 +34,21 @@ export const EditListWithItemsPageQuery = graphql(/* GraphQL */ `
   }
 `);
 
-// const CreateListPageQuery = graphql(/* GraphQL */ `
-//   mutation CreateList($id: String!) {
-//     createList(listName: String!) {
-//       id
-//     }
-//   }
-// `);
-
-// export const UpdateListMutation = graphql(/* GraphQL */ `
-//   mutation UpdateList($description: String) {
-//     updateList(description: $description) {
-//     }
-//   }
-// `);
+export const UpdateListPageMutation = graphql(/* GraphQL */ `
+  mutation UpdateList(
+      $listId: String!
+      $name: String!
+      $description: String!
+      $tags: [String]!
+    ) {
+      updateList(
+        id: $listId
+        name: $name
+        description: $description
+        tags: $tags
+      )
+    }
+`);
 
 interface EditListByIdPageProps {
   result?: EditListWithItemsQuery;
@@ -55,7 +61,7 @@ export function EditListByIdPage({ result }: EditListByIdPageProps) {
 
   const list = result.list;
 
-  const editableList = useEditable({
+  const [editableList, getList] = useEditable({
     name: list?.name ?? "",
     description: list?.description ?? "",
     tags: list?.tags?.join(", ") ?? "",
@@ -66,8 +72,20 @@ export function EditListByIdPage({ result }: EditListByIdPageProps) {
     // ),
   });
 
+  const mutation = useMutation({
+    mutationFn: (variables: UpdateListMutationVariables) =>
+      execute(UpdateListPageMutation, variables),
+  });
+
   const onSave = () => {
-    console.log("Saving changes:", editableList);
+    const data = getList();
+    console.log("Saving changes:", data);
+    mutation.mutate({
+      listId: list?.id ?? "",
+      name: data.name,
+      description: data.description,
+      tags: data.tags.split(",").map((tag) => tag.trim()),
+    });
   };
 
   if (!list) {
@@ -155,7 +173,7 @@ export function EditListByIdPage({ result }: EditListByIdPageProps) {
   );
 }
 
-type ListSpecRule = EditListWithItemsQuery["list"]["rules"][number];
+type ListSpecRule = EditListWithItemsQuery["list"]["rules"];
 
 function ruleToSemiColonSeparatedString(rule: ListSpecRule) {
   return `${rule.prompt};${rule.required};${rule.backing};${rule.ruleType};${rule.backingName};${rule.data}`;

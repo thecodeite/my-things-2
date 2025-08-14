@@ -171,6 +171,16 @@ export type EditListWithItemsQueryVariables = Exact<{
 
 export type EditListWithItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, description?: string | null, tags?: Array<string | null> | null, rules?: Array<{ __typename?: 'ListSpecRule', backing: string, backingName: string, data?: string | null, name: string, prompt: string, required: boolean, ruleType: string }> | null } | null };
 
+export type UpdateListMutationVariables = Exact<{
+  listId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  tags: Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateListMutation = { __typename?: 'Mutation', updateList?: boolean | null };
+
 export type SingleListItemQueryVariables = Exact<{
   listId: Scalars['String']['input'];
   itemId: Scalars['String']['input'];
@@ -236,6 +246,11 @@ export const EditListWithItemsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<EditListWithItemsQuery, EditListWithItemsQueryVariables>;
+export const UpdateListDocument = new TypedDocumentString(`
+    mutation UpdateList($listId: String!, $name: String!, $description: String!, $tags: [String]!) {
+  updateList(id: $listId, name: $name, description: $description, tags: $tags)
+}
+    `) as unknown as TypedDocumentString<UpdateListMutation, UpdateListMutationVariables>;
 export const SingleListItemDocument = new TypedDocumentString(`
     query SingleListItem($listId: String!, $itemId: String!) {
   list(id: $listId, listItemId: $itemId) {

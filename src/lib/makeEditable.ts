@@ -155,18 +155,18 @@ export function makeEditable<T extends CanMakeEditable>(
 export function unmakeEditable<T extends CanMakeEditable>(
   editable: AsEditableRootF<T> | AsEditableRoot<T>,
 ): T {
-  console.log("editable.__isProxy:", editable.__isProxy);
+  // console.log("editable.__isProxy:", editable.__isProxy);
 
   const root = editable.__isProxy ? editable[rootKey] : editable;
 
-  if (root === editable) {
-    console.log("Using root directly:", root, root.__isProxy);
-  } else {
-    console.log("Using root from editable:", root, root.__isProxy);
-  }
+  // if (root === editable) {
+  //   console.log("Using root directly:", root, root.__isProxy);
+  // } else {
+  //   console.log("Using root from editable:", root, root.__isProxy);
+  // }
 
   const entries = Object.entries(root) as [string, EditableItem<T>][];
-  console.log("entries:", entries);
+  // console.log("entries:", entries);
   const mappedEntries = entries
     .map(([key, value]) => {
       if (value.t === "f") {
@@ -193,7 +193,7 @@ export function attachOnChange<T>(
   callback: (newData: AsEditableRootF<T>) => void,
 ): () => void {
   const root = editable[rootKey];
-  console.log("root:", root);
+  //console.log("root:", root);
   const handlers = root[onChangeHandlersKey];
   if (!handlers) {
     throw new Error("No onChange handlers found on the editable object.");
@@ -294,7 +294,7 @@ function makePropertyProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "setValue") {
         return (newValue: string) => {
-          console.log(`Setting value at path ${String(path)} to: ${newValue}`);
+          // console.log(`Setting value at path ${String(path)} to: ${newValue}`);
 
           const newRoot = {
             ...root,
@@ -347,7 +347,7 @@ function makeListProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "addValue") {
         return (newValue: string) => {
-          console.log(`Adding value at path ${String(path)} to: ${newValue}`);
+          // console.log(`Adding value at path ${String(path)} to: ${newValue}`);
 
           const newRoot = {
             ...root,
@@ -371,9 +371,9 @@ function makeListProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "swapByIndex") {
         return (index1: number, index2: number) => {
-          console.log(
-            `Swapping items at indices ${index1} and ${index2} at path ${String(path)}`,
-          );
+          // console.log(
+          // //   `Swapping items at indices ${index1} and ${index2} at path ${String(path)}`,
+          // );
 
           const newList = [...target.list];
           [newList[index1], newList[index2]] = [
@@ -396,9 +396,9 @@ function makeListProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "swapById") {
         return (id1: symbol, id2: symbol) => {
-          console.log(
-            `Swapping items with ids ${id1.toString()} and ${id2.toString()} at path ${String(path)}`,
-          );
+          // console.log(
+          //   `Swapping items with ids ${id1.toString()} and ${id2.toString()} at path ${String(path)}`,
+          // );
 
           const newList = [...target.list];
           const index1 = newList.findIndex((item) => item.id === id1);
@@ -445,9 +445,9 @@ function makeListItemProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "setValue") {
         return (newValue: string) => {
-          console.log(
-            `Setting value at path ${String(path)}[${index}] to: ${newValue}`,
-          );
+          // console.log(
+          //   `Setting value at path ${String(path)}[${index}] to: ${newValue}`,
+          // );
 
           const oldListContainer = root[path] as EditableListF<T>;
           const newList = oldListContainer.list.map((item) =>
@@ -469,7 +469,7 @@ function makeListItemProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "remove") {
         return () => {
-          console.log(`Removing item at path ${String(path)}[${index}]`);
+          // console.log(`Removing item at path ${String(path)}[${index}]`);
 
           const oldListContainer = root[path] as EditableListF<T>;
           const newList = oldListContainer.list.filter(
