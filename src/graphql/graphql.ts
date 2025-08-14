@@ -164,6 +164,13 @@ export type AllListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllListsQuery = { __typename?: 'Query', lists?: Array<{ __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null> | null };
 
+export type EditListWithItemsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type EditListWithItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, description?: string | null, tags?: Array<string | null> | null, rules?: Array<{ __typename?: 'ListSpecRule', backing: string, backingName: string, data?: string | null, name: string, prompt: string, required: boolean, ruleType: string }> | null } | null };
+
 export type SingleListItemQueryVariables = Exact<{
   listId: Scalars['String']['input'];
   itemId: Scalars['String']['input'];
@@ -210,6 +217,25 @@ export const AllListsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AllListsQuery, AllListsQueryVariables>;
+export const EditListWithItemsDocument = new TypedDocumentString(`
+    query EditListWithItems($id: String!) {
+  list(id: $id) {
+    id
+    name
+    description
+    rules {
+      backing
+      backingName
+      data
+      name
+      prompt
+      required
+      ruleType
+    }
+    tags
+  }
+}
+    `) as unknown as TypedDocumentString<EditListWithItemsQuery, EditListWithItemsQueryVariables>;
 export const SingleListItemDocument = new TypedDocumentString(`
     query SingleListItem($listId: String!, $itemId: String!) {
   list(id: $listId, listItemId: $itemId) {
