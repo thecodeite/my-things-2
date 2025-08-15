@@ -53,7 +53,7 @@ const UpdateListPageMutation = graphql(/* GraphQL */ `
     }
 `);
 
-const SetListRulePageMutation = /* GraphQL */ `
+const SetListRulePageMutation = graphql(/* GraphQL */ `
     mutation SetListRule(
       $listId: String!
       $name: String!
@@ -75,7 +75,7 @@ const SetListRulePageMutation = /* GraphQL */ `
         data: $data
       )
     }
-  `;
+  `);
 
 interface EditListByIdPageProps {
   list: NonNullable<EditListWithItemsQuery["list"]>;
@@ -129,12 +129,12 @@ export function EditListByIdPage({ list }: EditListByIdPageProps) {
   const onSave = () => {
     const data = getList();
     console.log("Saving changes:", data);
-    // saveDetails.mutate({
-    //   listId: list?.id ?? "",
-    //   name: data.name,
-    //   description: data.description,
-    //   tags: data.tags.split(",").map((tag) => tag.trim()),
-    // });
+    saveDetails.mutate({
+      listId: list?.id ?? "",
+      name: data.name,
+      description: data.description,
+      tags: data.tags.split(",").map((tag) => tag.trim()),
+    });
 
     data.rules.forEach((rule, index) => {
       const existingRule = ruleList[index];
