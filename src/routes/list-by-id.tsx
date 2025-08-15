@@ -1,5 +1,5 @@
 import { ListByIdPage, ListWithItemsPageQuery } from "@/pages/list-by-id-page";
-import type { Crumbs } from "@/types/crumb";
+import { AllListsCrumb, type Crumbs, ViewListCrumb } from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
 import {
   type RootRoute,
@@ -33,16 +33,7 @@ export default (parentRoute: RootRoute) =>
       const data = await queryClient.fetchQuery(query(listId));
       const listName = data?.list?.name ?? "List";
 
-      const crumbs: Crumbs = [
-        {
-          text: "All Lists",
-          link: linkOptions({ to: "/all-lists" }),
-        },
-        {
-          text: listName,
-          link: linkOptions({ to: "/list/$listId", params: { listId } }),
-        },
-      ];
+      const crumbs: Crumbs = [AllListsCrumb, ViewListCrumb(listName, listId)];
 
       return {
         crumbs,

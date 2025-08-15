@@ -13,12 +13,13 @@ import {
 export default function Header() {
   const matches = useMatches();
 
-  const withCrumbs =
-    matches.find((match) => match.loaderData?.crumbs !== undefined)?.loaderData
-      ?.crumbs ?? [];
+  const match = matches.find(
+    (match) => match.loaderData?.crumbs !== undefined,
+  )?.loaderData;
 
-  const [page, ...rest] = withCrumbs.reverse();
-  rest.reverse();
+  const crumbs = [...(match?.crumbs ?? [])];
+
+  const lastCrumb = crumbs.pop();
 
   return (
     <header className="p-2">
@@ -29,7 +30,7 @@ export default function Header() {
               <Link to="/">Home</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          {rest.map((item) => (
+          {crumbs.map((item) => (
             <React.Fragment key={item?.text}>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -39,13 +40,13 @@ export default function Header() {
               </BreadcrumbItem>
             </React.Fragment>
           ))}
-          {page && (
+          {lastCrumb && (
             <>
               <BreadcrumbSeparator />
               <BreadcrumbPage>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link {...page.link}>{page?.text}</Link>
+                    <Link {...lastCrumb.link}>{lastCrumb?.text}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbPage>

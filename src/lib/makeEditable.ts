@@ -1,65 +1,60 @@
-export type IsEditable = string | string[] | { [key: string]: string };
+export interface WithMetadata {
+  value: string;
+  meta: Record<string, string>;
+}
+
+export type IsEditable = string | string[] | WithMetadata[];
 
 export type CanMakeEditable = Record<string, IsEditable>;
 
-interface EditableField<T> {
+interface EditableField {
   t: "f";
   value: string;
 }
 
-interface EditableFieldF<T> extends EditableField<T> {
+interface EditableFieldF<T> extends EditableField {
   setValue: (newValue: string) => AsEditableRootF<T>;
 }
 
-interface EditableListItem<T> {
+interface EditableListItem {
   t: "li";
   value: string;
   id: symbol;
+  meta: Record<string, string>;
 }
 
-interface EditableListItemF<T> extends EditableListItem<T> {
+interface EditableListItemF<T> extends EditableListItem {
   setValue: (newValue: string) => AsEditableRootF<T>;
   remove: () => AsEditableRootF<T>;
 }
 
-export interface EditableList<T> {
+const hasMetadataFlag = Symbol("hasMetadataFlag");
+
+export interface EditableList {
   t: "l";
-  list: Array<EditableListItem<T>>;
+  list: Array<EditableListItem>;
+  [hasMetadataFlag]: boolean;
 }
 
-export interface EditableListF<T> extends EditableList<T> {
+export interface EditableListF<T> extends EditableList {
   list: Array<EditableListItemF<T>>;
   addValue: (newValue: string) => AsEditableRootF<T>;
   swapByIndex: (index1: number, index2: number) => AsEditableRootF<T>;
   swapById: (id1: symbol, id2: symbol) => AsEditableRootF<T>;
 }
 
-interface EditableObject<T> {
-  t: "o";
-  keys: string[];
-  value: Record<string, string>;
-}
-
-interface EditableObjectF<T> extends EditableObject<T> {
-  addField: (key: string, value: string) => AsEditableRoot<T>;
-  removeField: (key: string) => AsEditableRoot<T>;
-  setField: (key: string, value: string) => AsEditableRoot<T>;
-}
+const noMetadata = {};
 
 type AsEditable<T> = {
-  [K in keyof T]: T[K] extends Array<string>
-    ? EditableList<T>
-    : T[K] extends Record<string, string>
-      ? EditableObject<T>
-      : EditableField<T>;
+  [K in keyof T]: T[K] extends Array<string> | Array<WithMetadata>
+    ? EditableList
+    : EditableField;
 };
 
 type AsEditableF<T> = {
-  [K in keyof T]: T[K] extends Array<string>
+  [K in keyof T]: T[K] extends Array<string> | Array<WithMetadata>
     ? EditableListF<T>
-    : T[K] extends Record<string, string>
-      ? EditableObjectF<T>
-      : EditableFieldF<T>;
+    : EditableFieldF<T>;
 };
 
 export const iterationId = Symbol("iterationId");
@@ -82,7 +77,7 @@ export type AsEditableRootF<T> = AsEditableF<T> & {
   __isProxy: true;
 };
 
-type EditableItem<T> = EditableList<T> | EditableObject<T> | EditableField<T>;
+type EditableItem = EditableList | EditableField;
 
 function IsDefined<T>(value: T | undefined): value is T {
   return value !== undefined;
@@ -91,46 +86,49 @@ function IsDefined<T>(value: T | undefined): value is T {
 export function makeEditable<T extends CanMakeEditable>(
   target: T,
 ): AsEditableRootF<T> {
-  // const editable: AsData<T> = Object.entries(target).reduce((acc, [key, value]) => {
-  //   if (typeof value === 'string') {
   const entries = Object.entries(target) as [string, IsEditable][];
-  const entriesAsData: [string, EditableItem<T>][] = entries.map(
+  const entriesAsData: [string, EditableItem][] = entries.map(
     ([key, value]) => {
       if (typeof value === "string") {
-        const field: EditableField<T> = {
+        const field: EditableField = {
           t: "f",
           value,
         };
         return [key, field];
-        // return [key, { value }];
       }
 
       if (
         Array.isArray(value) &&
         value.every((item) => typeof item === "string")
       ) {
-        const list: EditableList<T> = {
+        const list: EditableList = {
           t: "l",
+          [hasMetadataFlag]: false,
           list: value.map((item) => ({
             t: "li",
             value: item,
             id: Symbol(),
+            meta: noMetadata,
           })),
         };
         return [key, list];
       }
 
       if (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value)
+        Array.isArray(value) &&
+        value.every((item) => typeof item === "object" && item !== null)
       ) {
-        const obj: EditableObject<T> = {
-          t: "o",
-          keys: Object.keys(value),
-          value: { ...value },
+        const list: EditableList = {
+          t: "l",
+          [hasMetadataFlag]: true,
+          list: value.map((item) => ({
+            t: "li",
+            value: item.value,
+            id: Symbol(),
+            meta: item.meta,
+          })),
         };
-        return [key, obj];
+        return [key, list];
       }
 
       throw new Error(`Unsupported type for key "${key}": ${typeof value}`);
@@ -155,8 +153,6 @@ export function makeEditable<T extends CanMakeEditable>(
 export function unmakeEditable<T extends CanMakeEditable>(
   editable: AsEditableRootF<T> | AsEditableRoot<T>,
 ): T {
-  // console.log("editable.__isProxy:", editable.__isProxy);
-
   const root = editable.__isProxy ? editable[rootKey] : editable;
 
   // if (root === editable) {
@@ -165,23 +161,29 @@ export function unmakeEditable<T extends CanMakeEditable>(
   //   console.log("Using root from editable:", root, root.__isProxy);
   // }
 
-  const entries = Object.entries(root) as [string, EditableItem<T>][];
-  // console.log("entries:", entries);
+  const entries = Object.entries(root) as [string, EditableItem][];
+
   const mappedEntries = entries
     .map(([key, value]) => {
       if (value.t === "f") {
         return [key, value.value] as [string, string];
       }
       if (value.t === "l") {
+        if (value[hasMetadataFlag]) {
+          return [
+            key,
+            value.list.map((item) => ({
+              value: item.value,
+              meta: item.meta,
+            })),
+          ] as [string, WithMetadata[]];
+        }
+        // If no metadata, return just the values
         return [key, value.list.map((item) => item.value)] as [
           string,
           string[],
         ];
       }
-      if (value.t === "o") {
-        return [key, value.value] as [string, Record<string, string>];
-      }
-      // throw new Error(`Unsupported type for key "${key}": ${String((value as any)?.t)}`);
     })
     .filter(IsDefined);
 
@@ -247,20 +249,16 @@ function makeRootProxy<T extends CanMakeEditable>(
 
       if (lookup.t === "f") {
         return new Proxy(
-          lookup as EditableField<T>,
+          lookup as EditableField,
           makePropertyProxyHandler(root, key),
         ) as EditableFieldF<T>;
       }
 
       if (lookup.t === "l") {
         return new Proxy(
-          lookup as EditableList<T>,
+          lookup as EditableList,
           makeListProxyHandler(root, key),
         );
-      }
-
-      if (lookup.t === "o") {
-        return lookup;
       }
 
       throw new Error(
@@ -326,21 +324,16 @@ function makeListProxyHandler<T extends CanMakeEditable>(
             if (itemProp === "length") {
               return list.length;
             }
+            // TODO: whats going on here?
             const index = Number(itemProp);
             if (!Number.isNaN(index)) {
               return new Proxy(
                 list[index],
-                makeListItemProxyHandler(root, path, index),
+                makeListItemProxyHandler(root, path),
               );
             }
-            const item = list[index];
-            if (item) {
-              return new Proxy(
-                item,
-                makeListItemProxyHandler(root, path, index),
-              );
-            }
-            return undefined;
+
+            return Reflect.get(list, itemProp);
           },
         });
       }
@@ -429,7 +422,6 @@ function makeListProxyHandler<T extends CanMakeEditable>(
 function makeListItemProxyHandler<T extends CanMakeEditable>(
   root: AsEditableRoot<T>,
   path: keyof AsEditable<T>,
-  index: number,
 ): ProxyHandler<EditableListItemF<T>> {
   return {
     get(target, prop) {
@@ -437,6 +429,10 @@ function makeListItemProxyHandler<T extends CanMakeEditable>(
 
       if (prop === "value") {
         return target.value;
+      }
+
+      if (prop === "meta") {
+        return target.meta;
       }
 
       if (prop === "id") {

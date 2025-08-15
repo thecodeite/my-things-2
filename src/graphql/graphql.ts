@@ -181,6 +181,20 @@ export type UpdateListMutationVariables = Exact<{
 
 export type UpdateListMutation = { __typename?: 'Mutation', updateList?: boolean | null };
 
+export type SetListRuleMutationVariables = Exact<{
+  listId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  prompt: Scalars['String']['input'];
+  required: Scalars['Boolean']['input'];
+  backing: Scalars['String']['input'];
+  ruleType: Scalars['String']['input'];
+  backingName: Scalars['String']['input'];
+  data: Scalars['String']['input'];
+}>;
+
+
+export type SetListRuleMutation = { __typename?: 'Mutation', setListRule?: boolean | null };
+
 export type SingleListItemQueryVariables = Exact<{
   listId: Scalars['String']['input'];
   itemId: Scalars['String']['input'];
@@ -251,6 +265,20 @@ export const UpdateListDocument = new TypedDocumentString(`
   updateList(id: $listId, name: $name, description: $description, tags: $tags)
 }
     `) as unknown as TypedDocumentString<UpdateListMutation, UpdateListMutationVariables>;
+export const SetListRuleDocument = new TypedDocumentString(`
+    mutation SetListRule($listId: String!, $name: String!, $prompt: String!, $required: Boolean!, $backing: String!, $ruleType: String!, $backingName: String!, $data: String!) {
+  setListRule(
+    listId: $listId
+    name: $name
+    prompt: $prompt
+    required: $required
+    backing: $backing
+    ruleType: $ruleType
+    backingName: $backingName
+    data: $data
+  )
+}
+    `) as unknown as TypedDocumentString<SetListRuleMutation, SetListRuleMutationVariables>;
 export const SingleListItemDocument = new TypedDocumentString(`
     query SingleListItem($listId: String!, $itemId: String!) {
   list(id: $listId, listItemId: $itemId) {

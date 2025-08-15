@@ -1,14 +1,17 @@
 import { JsonDebug } from "@/components/JsonDebug";
 import { LoadingBanner } from "@/components/LoadingBanner";
 import { NavBar } from "@/components/NavBar";
+import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { graphql } from "@/graphql";
-import { execute } from "@/graphql/execute";
+import { execute, queryClient } from "@/graphql/execute";
 import type {
   EditListWithItemsQuery,
+  SetListRuleMutationVariables,
   UpdateListMutationVariables,
 } from "@/graphql/graphql";
+import type { WithMetadata } from "@/lib/makeEditable";
 import { useEditable } from "@/lib/useEditable";
 import { Label } from "@radix-ui/react-label";
 import { useMutation } from "@tanstack/react-query";
@@ -34,7 +37,7 @@ export const EditListWithItemsPageQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export const UpdateListPageMutation = graphql(/* GraphQL */ `
+const UpdateListPageMutation = graphql(/* GraphQL */ `
   mutation UpdateList(
       $listId: String!
       $name: String!
@@ -50,41 +53,114 @@ export const UpdateListPageMutation = graphql(/* GraphQL */ `
     }
 `);
 
+const SetListRulePageMutation = /* GraphQL */ `
+    mutation SetListRule(
+      $listId: String!
+      $name: String!
+      $prompt: String!
+      $required: Boolean!
+      $backing: String!
+      $ruleType: String!
+      $backingName: String!
+      $data: String!
+    ) {
+      setListRule(
+        listId: $listId
+        name: $name
+        prompt: $prompt
+        required: $required
+        backing: $backing
+        ruleType: $ruleType
+        backingName: $backingName
+        data: $data
+      )
+    }
+  `;
+
 interface EditListByIdPageProps {
-  result?: EditListWithItemsQuery;
+  list: NonNullable<EditListWithItemsQuery["list"]>;
 }
 
-export function EditListByIdPage({ result }: EditListByIdPageProps) {
-  if (!result) {
-    return <LoadingBanner />;
-  }
+export function EditListByIdPage({ list }: EditListByIdPageProps) {
+  const listId = list.id;
 
-  const list = result.list;
+  const ruleList: WithMetadata[] = (list.rules || []).map((rule) => ({
+    value: ruleToSemiColonSeparatedString(rule),
+    meta: {
+      name: rule.name,
+    },
+  }));
+
+  const prompts = Object.fromEntries(
+    list.rules?.map((rule) => [rule.name, rule.prompt]) ?? [],
+  );
 
   const [editableList, getList] = useEditable({
-    name: list?.name ?? "",
-    description: list?.description ?? "",
-    tags: list?.tags?.join(", ") ?? "",
-
-    // rules: Object.fromEntries(
-    //   list?.rules?.map((r) => [r.name, ruleToSemiColonSeparatedString(r)]) ??
-    //     [],
-    // ),
+    name: list.name,
+    description: list.description ?? "",
+    tags: (list.tags ?? []).join(", "),
+    rules: ruleList,
   });
 
-  const mutation = useMutation({
-    mutationFn: (variables: UpdateListMutationVariables) =>
-      execute(UpdateListPageMutation, variables),
+  // rules: Object.fromEntries(
+  //   list?.rules?.map((r) => [r.name, ruleToSemiColonSeparatedString(r)]) ??
+  //     [],
+  // ),
+
+  const saveDetails = useMutation(
+    {
+      mutationFn: (variables: UpdateListMutationVariables) =>
+        execute(UpdateListPageMutation, variables),
+    },
+    queryClient,
+  );
+
+  const saveRule = useMutation({
+    mutationFn: (variables: SetListRuleMutationVariables) =>
+      execute(SetListRulePageMutation, variables),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`list:${listId}`] });
+      console.log("Rule saved successfully. Invalidated:", `list:${listId}`);
+    },
   });
+
+  //[`list:${listId}`],
 
   const onSave = () => {
     const data = getList();
     console.log("Saving changes:", data);
-    mutation.mutate({
-      listId: list?.id ?? "",
-      name: data.name,
-      description: data.description,
-      tags: data.tags.split(",").map((tag) => tag.trim()),
+    // saveDetails.mutate({
+    //   listId: list?.id ?? "",
+    //   name: data.name,
+    //   description: data.description,
+    //   tags: data.tags.split(",").map((tag) => tag.trim()),
+    // });
+
+    data.rules.forEach((rule, index) => {
+      const existingRule = ruleList[index];
+      if (existingRule.value !== rule.value) {
+        const parsedRule = semiColonSeparatedStringToRule(
+          existingRule.meta.name,
+          rule.value,
+        );
+        if (parsedRule) {
+          console.log("Rule saved: ", parsedRule.name);
+          saveRule.mutate({
+            listId: list.id,
+            name: parsedRule.name,
+            prompt: parsedRule.prompt,
+            required: parsedRule.required,
+            backing: parsedRule.backing,
+            ruleType: parsedRule.ruleType,
+            backingName: parsedRule.backingName,
+            data: parsedRule.data ?? "",
+          });
+        } else {
+          console.error(
+            `Failed to parse rule for ${existingRule.meta.name}: ${rule.value}`,
+          );
+        }
+      }
     });
   };
 
@@ -93,7 +169,7 @@ export function EditListByIdPage({ result }: EditListByIdPageProps) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-4 max-w-128">
+    <PageContainer>
       <NavBar
         backLink={{
           text: "Back to List",
@@ -145,35 +221,50 @@ export function EditListByIdPage({ result }: EditListByIdPageProps) {
         />
       </div>
 
-      {/* <fieldset className="mt-4 border p-4 rounded-lg">
+      <fieldset className="mt-4 border p-4 rounded-lg">
         <legend className="text-lg font-semibold">Rules</legend>
-        {Object.entries(editable.rules).map(([ruleName, ruleStr], index) => (
-          <div className="grid w-full max-w-sm items-center gap-2" key={index}>
-            <Label htmlFor={`list-rule-${index}-id`} className="font-bold">
-              {ruleName}
+        <div>
+          <strong>Format:</strong>{" "}
+          <p>
+            <sub>prompt; required; backing; ruleType; backingName; data</sub>
+          </p>
+        </div>
+        {editableList.rules.list.map((rule) => (
+          <div
+            className="grid w-full max-w-sm items-center gap-2"
+            key={rule.meta.name}
+          >
+            <Label
+              htmlFor={`list-rule-${rule.meta.name}-id`}
+              className="font-bold"
+            >
+              {prompts[rule.meta.name]}
             </Label>
 
             <Input
               className="w-full ml-2"
               type="text"
-              id={`list-rule-${index}-id`}
-              value={ruleStr}
+              id={`list-rule-${rule.meta.name}-id`}
+              value={rule.value}
+              onChange={(e) => rule.setValue(e.target.value)}
               // onChange={(e) => onChange(`rules.${index}`, e.target.value)}
             />
           </div>
         ))}
-      </fieldset> */}
+      </fieldset>
 
       <JsonDebug data={list} />
       <JsonDebug data={editableList} />
       <Button className="mt-4" onClick={onSave}>
         Save Changes
       </Button>
-    </div>
+    </PageContainer>
   );
 }
 
-type ListSpecRule = EditListWithItemsQuery["list"]["rules"];
+type ListSpecRule = NonNullable<
+  NonNullable<EditListWithItemsQuery["list"]>["rules"]
+>[number];
 
 function ruleToSemiColonSeparatedString(rule: ListSpecRule) {
   return `${rule.prompt};${rule.required};${rule.backing};${rule.ruleType};${rule.backingName};${rule.data}`;

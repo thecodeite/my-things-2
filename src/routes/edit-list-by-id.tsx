@@ -1,8 +1,15 @@
-import { execute } from "@/graphql/execute";
+import { LoadingBanner } from "@/components/LoadingBanner";
+import { execute, queryClient } from "@/graphql/execute";
 import {
   EditListByIdPage,
   EditListWithItemsPageQuery,
 } from "@/pages/edit-list-by-id-page";
+import {
+  AllListsCrumb,
+  type Crumbs,
+  EditListCrumb,
+  ViewListCrumb,
+} from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
 import { type RootRoute, createRoute, useParams } from "@tanstack/react-router";
 
@@ -18,7 +25,15 @@ function EditListByIdRoute() {
 
   const { data } = useQuery(query(listId));
 
-  return <EditListByIdPage result={data} />; // Pass undefined for now, as we don't have data fetching here
+  if (!data) {
+    return <LoadingBanner />;
+  }
+
+  if (!data.list) {
+    return <div className="text-red-500">List not found</div>;
+  }
+
+  return <EditListByIdPage list={data.list} />;
 }
 
 export default (parentRoute: RootRoute) =>
@@ -26,4 +41,19 @@ export default (parentRoute: RootRoute) =>
     path: "/list/$listId/edit",
     component: EditListByIdRoute,
     getParentRoute: () => parentRoute,
+    loader: async ({ params }) => {
+      const { listId } = params;
+      const data = await queryClient.fetchQuery(query(listId));
+      const listName = data?.list?.name ?? "List";
+
+      const crumbs: Crumbs = [
+        AllListsCrumb,
+        ViewListCrumb(listName, listId),
+        EditListCrumb(listId),
+      ];
+
+      return {
+        crumbs,
+      };
+    },
   });
