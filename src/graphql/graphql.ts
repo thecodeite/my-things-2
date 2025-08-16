@@ -210,6 +210,14 @@ export type ListWithItemsQueryVariables = Exact<{
 
 export type ListWithItemsQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null };
 
+export type DeleteListItemMutationVariables = Exact<{
+  listId: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteListItemMutation = { __typename?: 'Mutation', deleteListItem?: boolean | null };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -318,3 +326,8 @@ export const ListWithItemsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ListWithItemsQuery, ListWithItemsQueryVariables>;
+export const DeleteListItemDocument = new TypedDocumentString(`
+    mutation DeleteListItem($listId: String!, $itemId: String!) {
+  deleteListItem(listId: $listId, itemId: $itemId)
+}
+    `) as unknown as TypedDocumentString<DeleteListItemMutation, DeleteListItemMutationVariables>;

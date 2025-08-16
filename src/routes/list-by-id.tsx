@@ -1,16 +1,14 @@
+import { LoadingBanner } from "@/components/LoadingBanner";
 import { ListByIdPage, ListWithItemsPageQuery } from "@/pages/list-by-id-page";
 import { AllListsCrumb, type Crumbs, ViewListCrumb } from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
-import {
-  type RootRoute,
-  createRoute,
-  linkOptions,
-  useParams,
-} from "@tanstack/react-router";
+import { type RootRoute, createRoute, useParams } from "@tanstack/react-router";
 import { execute, queryClient } from "../graphql/execute";
 
+const makeQueryKey = (listId: string) => `lists:${listId}`;
+
 const query = (listId: string) => ({
-  queryKey: [`lists:${listId}`],
+  queryKey: [makeQueryKey(listId)],
   queryFn: () => execute(ListWithItemsPageQuery, { id: listId }),
 });
 
@@ -20,7 +18,16 @@ function ListByIdRoute() {
 
   const { data } = useQuery(query(listId));
 
-  return <ListByIdPage result={data} />;
+  if (!data) {
+    return <LoadingBanner />;
+  }
+
+  // TODO: component for missing items
+  if (!data.list) {
+    return <div>Missing</div>;
+  }
+
+  return <ListByIdPage list={data.list} queryKey={makeQueryKey(listId)} />;
 }
 
 export default (parentRoute: RootRoute) =>
