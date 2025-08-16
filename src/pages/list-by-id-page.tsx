@@ -1,5 +1,7 @@
+import { allListsLink } from "@/components/CommonNavLinks";
 import { LoadingBanner } from "@/components/LoadingBanner";
-import { NavLink } from "@/components/NavLink";
+import { NavBar } from "@/components/NavBar";
+import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
 import { graphql } from "@/graphql";
 import type { ListWithItemsQuery } from "@/graphql/graphql";
@@ -31,22 +33,10 @@ export function ListByIdPage({ result }: ListByIdPageProps) {
   const list = result.list ?? { id: "", name: "Unknown List" };
 
   return (
-    <div className="flex flex-col min-h-screen p-4 max-w-128">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-start space-y-4 w-full">
-        <NavLink direction="back" to={"/all-lists"}>
-          Back to lists
-        </NavLink>
-
+    <PageContainer>
+      <NavBar backLink={allListsLink("Back to Lists")}>
         <h1 className="text-2xl font-bold mb-4">{list.name}</h1>
-
-        <NavLink
-          direction="forward"
-          to={"/list/$listId/edit"}
-          params={{ listId: list.id ?? "" }}
-        >
-          Edit List
-        </NavLink>
-      </div>
+      </NavBar>
 
       <ul className="flex flex-col space-y-2">
         {(result.list?.listItems ?? []).map((item) => (
@@ -70,6 +60,6 @@ export function ListByIdPage({ result }: ListByIdPageProps) {
           </li>
         ))}
       </ul>
-    </div>
+    </PageContainer>
   );
 }

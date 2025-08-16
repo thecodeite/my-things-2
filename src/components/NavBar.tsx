@@ -1,7 +1,7 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { NavLink } from "./NavLink";
 
-interface NavBarLinkProps {
+export interface NavBarLinkProps {
   text: string;
   link: LinkProps;
 }

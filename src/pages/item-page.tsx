@@ -1,5 +1,11 @@
+import {
+  editItemLink,
+  viewItemLink,
+  viewListLink,
+} from "@/components/CommonNavLinks";
 import { JsonDebug } from "@/components/JsonDebug";
-import { NavLink } from "@/components/NavLink";
+import { NavBar, type NavBarLinkProps } from "@/components/NavBar";
+import { PageContainer } from "@/components/PageContainer";
 import { TraitEditor, type TraitProps, TraitViewer } from "@/components/Trait";
 import { Card, CardContent } from "@/components/ui/card";
 import { graphql } from "@/graphql";
@@ -112,26 +118,20 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
     );
   }
 
+  const backLink =
+    mode === "view"
+      ? viewListLink("Back to List", list.id)
+      : viewItemLink("Back to Item", list.id, itemId);
+
+  const forwardLink =
+    mode === "view" ? editItemLink("Edit Item", listId, itemId) : undefined;
+
   return (
-    <div className="flex flex-col min-h-screen p-4 max-w-128">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-start space-y-4 w-full">
-        <NavLink direction="back" to={"/list/$listId"}>
-          Back to List
-        </NavLink>
-
-        <div className="flex flex-col items-center justify-between">
-          <h2>{list.name}</h2>
-          <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
-        </div>
-
-        <NavLink
-          direction="forward"
-          to={"/list/$listId/item/$itemId/edit"}
-          params={{ listId, itemId }}
-        >
-          Edit Item
-        </NavLink>
-      </div>
+    <PageContainer>
+      <NavBar backLink={backLink} forwardLink={forwardLink}>
+        <h2>{list.name}</h2>
+        <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
+      </NavBar>
       <Card>
         <CardContent className="space-y-4 flex flex-col gap-4">
           {listItem.description && <p>{listItem.description}</p>}
@@ -160,6 +160,6 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
         <JsonDebug data={allFields} title="Fields" />
         <JsonDebug data={list} title="List" />
       </div>
-    </div>
+    </PageContainer>
   );
 }

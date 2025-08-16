@@ -1,5 +1,6 @@
+import { viewListLink } from "@/components/CommonNavLinks";
 import { JsonDebug } from "@/components/JsonDebug";
-import { LoadingBanner } from "@/components/LoadingBanner";
+
 import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -170,12 +171,7 @@ export function EditListByIdPage({ list }: EditListByIdPageProps) {
 
   return (
     <PageContainer>
-      <NavBar
-        backLink={{
-          text: "Back to List",
-          link: { to: "/list/$listId", params: { listId: list.id } },
-        }}
-      >
+      <NavBar backLink={viewListLink("Back to List", list.id)}>
         <h1 className="text-2xl font-bold mb-4">Edit: {list.name}</h1>
       </NavBar>
 

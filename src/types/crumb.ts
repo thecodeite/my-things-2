@@ -1,24 +1,22 @@
-import { type LinkProps, linkOptions } from "@tanstack/react-router";
+import {
+  allListsLink,
+  editItemLink,
+  editListLink,
+  viewItemLink,
+  viewListLink,
+} from "@/components/CommonNavLinks";
+import type { NavBarLinkProps } from "@/components/NavBar";
 
-export interface Crumb {
-  text: string;
-  link: LinkProps;
-}
+export type Crumb = NavBarLinkProps;
 export type Crumbs = Crumb[];
 
-export const AllListsCrumb: Crumb = {
-  text: "All Lists",
-  link: {
-    to: "/all-lists",
-  },
-};
+export const AllListsCrumb: Crumb = allListsLink("All Lists");
 
-export const ViewListCrumb = (name: string, listId: string): Crumb => ({
-  text: name,
-  link: linkOptions({ to: "/list/$listId", params: { listId } }),
-});
+export const ViewListCrumb = viewListLink;
 
-export const EditListCrumb = (listId: string): Crumb => ({
-  text: "Edit",
-  link: linkOptions({ to: "/list/$listId/edit", params: { listId } }),
-});
+export const EditListCrumb = (listId: string) => editListLink("Edit", listId);
+
+export const ViewListItemCrumb = viewItemLink;
+
+export const EditListItemCrumb = (listId: string, itemId: string) =>
+  editItemLink("Edit Item", listId, itemId);

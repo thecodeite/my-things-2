@@ -1,3 +1,4 @@
+import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
 import type { AllListsQuery } from "@/graphql/graphql";
 import { Link } from "@tanstack/react-router";
@@ -41,7 +42,7 @@ export function AllListsPage({ result }: AllListsPageProps) {
   }
 
   return (
-    <div className="flex items-start justify-stretch min-h-screen  p-4 max-w-128">
+    <PageContainer>
       <ul className="flex flex-col space-y-2 flex-grow">
         {lists.map((list) => (
           <li key={list.id}>
@@ -60,6 +61,6 @@ export function AllListsPage({ result }: AllListsPageProps) {
           </li>
         ))}
       </ul>
-    </div>
+    </PageContainer>
   );
 }

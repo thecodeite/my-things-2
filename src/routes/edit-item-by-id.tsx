@@ -1,13 +1,14 @@
 import { execute, queryClient } from "@/graphql/execute";
 import { ItemByIdPage, SingleListItemPageQuery } from "@/pages/item-page";
-import type { Crumbs } from "@/types/crumb";
-import { useQuery } from "@tanstack/react-query";
 import {
-  type RootRoute,
-  createRoute,
-  linkOptions,
-  useParams,
-} from "@tanstack/react-router";
+  AllListsCrumb,
+  type Crumbs,
+  EditListItemCrumb,
+  ViewListCrumb,
+  ViewListItemCrumb,
+} from "@/types/crumb";
+import { useQuery } from "@tanstack/react-query";
+import { type RootRoute, createRoute, useParams } from "@tanstack/react-router";
 
 const query = (listId: string, itemId: string) => ({
   queryKey: [`list:${listId}:item:${itemId}`],
@@ -36,21 +37,10 @@ export default (parentRoute: RootRoute) =>
       const itemName = data?.list?.listItem?.name ?? "Item";
 
       const crumbs: Crumbs = [
-        {
-          text: "All Lists",
-          link: linkOptions({ to: "/all-lists" }),
-        },
-        {
-          text: listName,
-          link: linkOptions({ to: "/list/$listId", params: { listId } }),
-        },
-        {
-          text: itemName,
-          link: linkOptions({
-            to: "/list/$listId/item/$itemId",
-            params: { listId, itemId },
-          }),
-        },
+        AllListsCrumb,
+        ViewListCrumb(listName, listId),
+        ViewListItemCrumb(itemName, listId, itemId),
+        EditListItemCrumb(listId, itemId),
       ];
 
       return {
