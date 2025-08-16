@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { AllListsQuery } from "@/graphql/graphql";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { graphql } from "../graphql/gql";
 
 export const AllListsPageQuery = graphql(/* GraphQL */ `
@@ -18,29 +19,15 @@ export const AllListsPageQuery = graphql(/* GraphQL */ `
   }
 `);
 
+type List = NonNullable<
+  NonNullable<NonNullable<AllListsQuery>["lists"]>[number]
+>;
+
 interface AllListsPageProps {
-  result?: AllListsQuery;
+  lists: List[];
 }
 
-export function AllListsPage({ result }: AllListsPageProps) {
-  if (!result || !result.lists) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <span className="text-gray-500">Loading...</span>
-      </div>
-    );
-  }
-
-  const lists = result.lists.filter((list) => list !== null);
-
-  if (lists.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <span className="text-gray-500">No lists found.</span>
-      </div>
-    );
-  }
-
+export function AllListsPage({ lists }: AllListsPageProps) {
   return (
     <PageContainer>
       <ul className="flex flex-col space-y-2 flex-grow">
