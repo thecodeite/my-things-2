@@ -5,13 +5,35 @@ export interface NavBarLinkProps {
   text: string;
   link: LinkProps;
 }
-interface NavBarProps {
-  children?: React.ReactNode;
-  backLink?: NavBarLinkProps;
-  forwardLink?: NavBarLinkProps;
-}
+type BackwardsSlot =
+  | {
+      backLink?: NavBarLinkProps;
+    }
+  | {
+      backComponent?: React.ReactNode;
+    };
 
-export function NavBar({ children, backLink, forwardLink }: NavBarProps) {
+type ForwardsSlot =
+  | {
+      forwardLink?: NavBarLinkProps;
+    }
+  | {
+      forwardComponent?: React.ReactNode;
+    };
+
+type NavBarProps = {
+  children?: React.ReactNode;
+} & BackwardsSlot &
+  ForwardsSlot;
+
+export function NavBar({ children, ...props }: NavBarProps) {
+  const forwardLink = "forwardLink" in props ? props.forwardLink : undefined;
+  const backLink = "backLink" in props ? props.backLink : undefined;
+
+  const forwardComponent =
+    "forwardComponent" in props ? props.forwardComponent : <div />;
+  const backComponent =
+    "backComponent" in props ? props.backComponent : <div />;
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-start space-y-4 w-full">
       {backLink ? (
@@ -23,7 +45,7 @@ export function NavBar({ children, backLink, forwardLink }: NavBarProps) {
           {backLink.text}
         </NavLink>
       ) : (
-        <div />
+        backComponent
       )}
 
       <div className="flex flex-col items-center justify-between">
@@ -39,7 +61,7 @@ export function NavBar({ children, backLink, forwardLink }: NavBarProps) {
           {forwardLink.text}
         </NavLink>
       ) : (
-        <div />
+        <div className="flex justify-end">{forwardComponent}</div>
       )}
     </div>
   );
