@@ -255,9 +255,11 @@ export function EditListByIdPage({ list }: EditListByIdPageProps) {
 
       <JsonDebug data={list} />
       <JsonDebug data={editableList} />
-      <Button className="mt-4" onClick={onSave}>
-        Save Changes
-      </Button>
+      <div className="sticky bottom-16 bg-transparent z-10 pt-4">
+        <Button className="mt-4 w-full" onClick={onSave}>
+          Save Changes
+        </Button>
+      </div>
     </PageContainer>
   );
 }
