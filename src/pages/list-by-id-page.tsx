@@ -3,11 +3,13 @@ import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { graphql } from "@/graphql";
 import { execute, queryClient } from "@/graphql/execute";
 import type {
+  CreateListItemMutationVariables,
   DeleteListItemMutationVariables,
   ListWithItemsQuery,
 } from "@/graphql/graphql";
@@ -32,8 +34,15 @@ export const ListWithItemsPageQuery = graphql(/* GraphQL */ `
 export const DeleteListItem = graphql(/* GraphQL */ `
   mutation DeleteListItem($listId: String!, $itemId: String!) {
     deleteListItem(listId: $listId, itemId: $itemId) 
+  }
+`);
 
-    
+export const CreateListItem = graphql(/* GraphQL */ `
+  mutation CreateListItem($listId: String!, $name: String!) {
+    createListItem(listId: $listId, name: $name) {
+      id
+      name
+    }
   }
 `);
 
@@ -54,6 +63,7 @@ export function ListByIdPage({ list, queryKey }: ListByIdPageProps) {
 
   const [isEditing, setIsEditing] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [newItemName, setNewItemName] = useState("");
 
   const selectedItem = listItems.find((item) => item.id === selectedItems[0]);
 
@@ -73,6 +83,15 @@ export function ListByIdPage({ list, queryKey }: ListByIdPageProps) {
     onSuccess: () => {
       // queryClient.invalidateQueries({ queryKey: [`list:${listId}`] });
       // console.log("Item deleted successfully. Invalidated:", `list:${listId}`);
+    },
+  });
+
+  const createListItem = useMutation({
+    mutationFn: (variables: CreateListItemMutationVariables) =>
+      execute(CreateListItem, variables),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKey] });
+      // console.log("Item created successfully. Invalidated:", `list:${listId}`);
     },
   });
 
@@ -114,7 +133,7 @@ export function ListByIdPage({ list, queryKey }: ListByIdPageProps) {
         </div>
       )}
 
-      <ul className="flex flex-col space-y-2">
+      <ul className="flex flex-col space-y-2 grow">
         {listItems.map((item) => (
           <li key={item.id} className="flex flex-row items-center">
             <Button
@@ -142,6 +161,25 @@ export function ListByIdPage({ list, queryKey }: ListByIdPageProps) {
             )}
           </li>
         ))}
+        <li className="grow flex flex-col justify-end">
+          <form
+            className="flex"
+            onSubmit={(e) => {
+              e.preventDefault();
+              createListItem.mutate({ listId, name: newItemName });
+              setNewItemName("");
+            }}
+          >
+            <Input
+              placeholder="Add new item..."
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              className="mb-2 mr-2 item-input flex-grow"
+            />
+
+            <Button type="submit">Add</Button>
+          </form>
+        </li>
       </ul>
     </PageContainer>
   );

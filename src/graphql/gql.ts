@@ -21,7 +21,8 @@ type Documents = {
     "\n    mutation SetListRule(\n      $listId: String!\n      $name: String!\n      $prompt: String!\n      $required: Boolean!\n      $backing: String!\n      $ruleType: String!\n      $backingName: String!\n      $data: String!\n    ) {\n      setListRule(\n        listId: $listId\n        name: $name\n        prompt: $prompt\n        required: $required\n        backing: $backing\n        ruleType: $ruleType\n        backingName: $backingName\n        data: $data\n      )\n    }\n  ": typeof types.SetListRuleDocument,
     "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        description\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n": typeof types.SingleListItemDocument,
     "\n  query ListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": typeof types.ListWithItemsDocument,
-    "\n  mutation DeleteListItem($listId: String!, $itemId: String!) {\n    deleteListItem(listId: $listId, itemId: $itemId) \n\n    \n  }\n": typeof types.DeleteListItemDocument,
+    "\n  mutation DeleteListItem($listId: String!, $itemId: String!) {\n    deleteListItem(listId: $listId, itemId: $itemId) \n  }\n": typeof types.DeleteListItemDocument,
+    "\n  mutation CreateListItem($listId: String!, $name: String!) {\n    createListItem(listId: $listId, name: $name) {\n      id\n      name\n    }\n  }\n": typeof types.CreateListItemDocument,
 };
 const documents: Documents = {
     "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.AllListsDocument,
@@ -30,7 +31,8 @@ const documents: Documents = {
     "\n    mutation SetListRule(\n      $listId: String!\n      $name: String!\n      $prompt: String!\n      $required: Boolean!\n      $backing: String!\n      $ruleType: String!\n      $backingName: String!\n      $data: String!\n    ) {\n      setListRule(\n        listId: $listId\n        name: $name\n        prompt: $prompt\n        required: $required\n        backing: $backing\n        ruleType: $ruleType\n        backingName: $backingName\n        data: $data\n      )\n    }\n  ": types.SetListRuleDocument,
     "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        description\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n": types.SingleListItemDocument,
     "\n  query ListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.ListWithItemsDocument,
-    "\n  mutation DeleteListItem($listId: String!, $itemId: String!) {\n    deleteListItem(listId: $listId, itemId: $itemId) \n\n    \n  }\n": types.DeleteListItemDocument,
+    "\n  mutation DeleteListItem($listId: String!, $itemId: String!) {\n    deleteListItem(listId: $listId, itemId: $itemId) \n  }\n": types.DeleteListItemDocument,
+    "\n  mutation CreateListItem($listId: String!, $name: String!) {\n    createListItem(listId: $listId, name: $name) {\n      id\n      name\n    }\n  }\n": types.CreateListItemDocument,
 };
 
 /**
@@ -60,7 +62,11 @@ export function graphql(source: "\n  query ListWithItems($id: String!) {\n    li
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation DeleteListItem($listId: String!, $itemId: String!) {\n    deleteListItem(listId: $listId, itemId: $itemId) \n\n    \n  }\n"): typeof import('./graphql').DeleteListItemDocument;
+export function graphql(source: "\n  mutation DeleteListItem($listId: String!, $itemId: String!) {\n    deleteListItem(listId: $listId, itemId: $itemId) \n  }\n"): typeof import('./graphql').DeleteListItemDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateListItem($listId: String!, $name: String!) {\n    createListItem(listId: $listId, name: $name) {\n      id\n      name\n    }\n  }\n"): typeof import('./graphql').CreateListItemDocument;
 
 
 export function graphql(source: string) {
