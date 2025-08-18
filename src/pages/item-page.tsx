@@ -4,7 +4,7 @@ import {
   viewListLink,
 } from "@/components/CommonNavLinks";
 import { JsonDebug } from "@/components/JsonDebug";
-import { NavBar, type NavBarLinkProps } from "@/components/NavBar";
+import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
 import { TraitEditor, type TraitProps, TraitViewer } from "@/components/Trait";
 import { Card, CardContent } from "@/components/ui/card";
@@ -133,7 +133,7 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
         <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
       </NavBar>
       <Card>
-        <CardContent className="space-y-4 flex flex-col gap-4">
+        <CardContent className="space-y-4 flex flex-col ">
           {listItem.description && <p>{listItem.description}</p>}
           {allFields.map((field) =>
             field.onChange ? (
