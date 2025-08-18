@@ -8,8 +8,6 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import allLists from "./routes/all-lists.tsx";
-import listById from "./routes/list-by-id.tsx";
 
 import Header from "./components/Header";
 
@@ -21,9 +19,12 @@ import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
 
 import App from "./App.tsx";
-import editItemById from "./routes/edit-item-by-id.tsx";
-import editListById from "./routes/edit-list-by-id.tsx";
-import viewItemById from "./routes/view-item-by-id.tsx";
+
+import { AllListsRoute } from "./routes/all-lists.tsx";
+import { EditItemByIdRoute } from "./routes/edit-item-by-id.tsx";
+import { EditListByIdRoute } from "./routes/edit-list-by-id.tsx";
+import { ListByIdRoute } from "./routes/list-by-id.tsx";
+import { ViewItemByIdRoute } from "./routes/view-item-by-id.tsx";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -43,13 +44,29 @@ const indexRoute = createRoute({
   component: App,
 });
 
+//   {
+//     p: "/",
+//     e: "",
+//     c: appRoute,
+//     ch: [
+//       { p: "/all-lists", e: "all-lists", c: all },
+//       {
+//         p: "/list/$listId",
+//         e: "/list/$listId",
+//         c: indexRoute,
+//         ch: [{ p: "/list/$listId/edit", c: editListRoute }],
+//       },
+//     ],
+//   },
+// ];
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  allLists(rootRoute),
-  listById(rootRoute),
-  viewItemById(rootRoute), // Ensure this is after listById to avoid conflicts
-  editItemById(rootRoute), // Ensure this is after viewItemById to avoid conflicts
-  editListById(rootRoute), // Ensure this is after listById to avoid conflicts
+  AllListsRoute(rootRoute),
+  ListByIdRoute(rootRoute),
+  ViewItemByIdRoute(rootRoute), // Ensure this is after listById to avoid conflicts
+  EditItemByIdRoute(rootRoute), // Ensure this is after viewItemById to avoid conflicts
+  EditListByIdRoute(rootRoute), // Ensure this is after listById to avoid conflicts
 ]);
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();

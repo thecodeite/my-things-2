@@ -1,4 +1,5 @@
 import { LoadingBanner } from "@/components/LoadingBanner";
+import { NotFoundBanner } from "@/components/NotFoundBanner";
 import { ListByIdPage, ListWithItemsPageQuery } from "@/pages/list-by-id-page";
 import { AllListsCrumb, type Crumbs, ViewListCrumb } from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +13,7 @@ const query = (listId: string) => ({
   queryFn: () => execute(ListWithItemsPageQuery, { id: listId }),
 });
 
-function ListByIdRoute() {
+function ListByIdRouteComponent() {
   let { listId } = useParams({ strict: false }); // get listId from URL params
   listId = listId ?? "";
 
@@ -24,16 +25,16 @@ function ListByIdRoute() {
 
   // TODO: component for missing items
   if (!data.list) {
-    return <div>Missing</div>;
+    return <NotFoundBanner>List not found</NotFoundBanner>;
   }
 
   return <ListByIdPage list={data.list} queryKey={makeQueryKey(listId)} />;
 }
 
-export default (parentRoute: RootRoute) =>
+export const ListByIdRoute = (parentRoute: RootRoute) =>
   createRoute({
     path: "/list/$listId",
-    component: ListByIdRoute,
+    component: ListByIdRouteComponent,
     getParentRoute: () => parentRoute,
     loader: async ({ params }) => {
       const { listId } = params;

@@ -1,8 +1,9 @@
 import { LoadingBanner } from "@/components/LoadingBanner";
+import { NotFoundBanner } from "@/components/NotFoundBanner";
 import { execute, queryClient } from "@/graphql/execute";
 import {
   EditListByIdPage,
-  EditListWithItemsPageQuery,
+  editListWithItemsPageQuery,
 } from "@/pages/edit-list-by-id-page";
 import {
   AllListsCrumb,
@@ -15,10 +16,10 @@ import { type RootRoute, createRoute, useParams } from "@tanstack/react-router";
 
 const query = (listId: string) => ({
   queryKey: [`list:${listId}`],
-  queryFn: () => execute(EditListWithItemsPageQuery, { id: listId }),
+  queryFn: () => execute(editListWithItemsPageQuery, { id: listId }),
 });
 
-function EditListByIdRoute() {
+function EditListByIdComponent() {
   let { listId } = useParams({ strict: false }); // get §listId from URL params
 
   listId = listId ?? "";
@@ -30,16 +31,16 @@ function EditListByIdRoute() {
   }
 
   if (!data.list) {
-    return <div className="text-red-500">List not found</div>;
+    return <NotFoundBanner>List not found</NotFoundBanner>;
   }
 
   return <EditListByIdPage list={data.list} />;
 }
 
-export default (parentRoute: RootRoute) =>
+export const EditListByIdRoute = (parentRoute: RootRoute) =>
   createRoute({
     path: "/list/$listId/edit",
-    component: EditListByIdRoute,
+    component: EditListByIdComponent,
     getParentRoute: () => parentRoute,
     loader: async ({ params }) => {
       const { listId } = params;

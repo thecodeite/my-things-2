@@ -3,10 +3,9 @@ import { Button } from "@/components/ui/button";
 import type { AllListsQuery } from "@/graphql/graphql";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
 import { graphql } from "../graphql/gql";
 
-export const AllListsPageQuery = graphql(/* GraphQL */ `
+export const allListsPageQuery = graphql(/* GraphQL */ `
   query AllLists {
     lists {
       id

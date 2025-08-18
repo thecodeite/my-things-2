@@ -14,7 +14,7 @@ const query = (listId: string, itemId: string) => ({
   queryFn: () => execute(SingleListItemPageQuery, { listId, itemId }),
 });
 
-function ViewItemByIdRoute() {
+function ViewItemByIdRouteComponent() {
   let { listId, itemId } = useParams({ strict: false });
   listId = listId ?? "";
   itemId = itemId ?? "";
@@ -24,10 +24,10 @@ function ViewItemByIdRoute() {
   return <ItemByIdPage result={data} mode="view" />;
 }
 
-export default (parentRoute: RootRoute) =>
+export const ViewItemByIdRoute = (parentRoute: RootRoute) =>
   createRoute({
     path: "/list/$listId/item/$itemId",
-    component: ViewItemByIdRoute,
+    component: ViewItemByIdRouteComponent,
     getParentRoute: () => parentRoute,
     loader: async ({ params }) => {
       const { listId, itemId } = params;

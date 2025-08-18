@@ -17,7 +17,7 @@ import { useEditable } from "@/lib/useEditable";
 import { Label } from "@radix-ui/react-label";
 import { useMutation } from "@tanstack/react-query";
 
-export const EditListWithItemsPageQuery = graphql(/* GraphQL */ `
+export const editListWithItemsPageQuery = graphql(/* GraphQL */ `
   query EditListWithItems($id: String!) {
     list(id: $id) {
       id
@@ -102,11 +102,6 @@ export function EditListByIdPage({ list }: EditListByIdPageProps) {
     tags: (list.tags ?? []).join(", "),
     rules: ruleList,
   });
-
-  // rules: Object.fromEntries(
-  //   list?.rules?.map((r) => [r.name, ruleToSemiColonSeparatedString(r)]) ??
-  //     [],
-  // ),
 
   const saveDetails = useMutation(
     {

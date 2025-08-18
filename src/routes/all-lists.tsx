@@ -4,16 +4,16 @@ import type { RootRoute } from "@tanstack/react-router";
 
 import { LoadingBanner } from "@/components/LoadingBanner";
 import { execute } from "@/graphql/execute";
-import { AllListsPage, AllListsPageQuery } from "@/pages/all-lists-page";
+import { AllListsPage, allListsPageQuery } from "@/pages/all-lists-page";
 import { AllListsCrumb, type Crumbs } from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
 
 const query = () => ({
   queryKey: ["all-lists"],
-  queryFn: () => execute(AllListsPageQuery),
+  queryFn: () => execute(allListsPageQuery),
 });
 
-function AllListsRoute() {
+function AllListsRouteComponent() {
   const { data } = useQuery(query());
 
   if (!data) {
@@ -37,10 +37,10 @@ function AllListsRoute() {
   );
 }
 
-export default (parentRoute: RootRoute) =>
+export const AllListsRoute = (parentRoute: RootRoute) =>
   createRoute({
     path: "/all-lists",
-    component: AllListsRoute,
+    component: AllListsRouteComponent,
     getParentRoute: () => parentRoute,
     loader: () => {
       const crumbs: Crumbs = [AllListsCrumb];
