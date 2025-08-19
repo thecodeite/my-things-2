@@ -1,6 +1,8 @@
 import { HoverCardTrigger } from "@radix-ui/react-hover-card";
 import type { JSX } from "react";
+import { PickTraitEditor } from "./traits/editors/PickTraitEditor";
 import { TextTraitEditor } from "./traits/editors/TextTraitEditor";
+import { GpsTraitViewer } from "./traits/viewers/GpsTraitViewer";
 import { TextTraitViewer } from "./traits/viewers/TextTraitViewer";
 import { TraitViewerPromptWrapper } from "./traits/viewers/TraitViewerPromptWrapper";
 import { HoverCard, HoverCardContent } from "./ui/hover-card";
@@ -36,8 +38,17 @@ export function TraitViewer({ trait, rule }: ViewTraitProps) {
   let prompt: JSX.Element = <>{trait.prompt}</>;
   let content: JSX.Element | null = null;
 
-  if (rule.ruleType === "text") {
+  if (
+    rule.ruleType === "text" ||
+    rule.ruleType === "multi-line" ||
+    rule.ruleType === "pick" ||
+    rule.ruleType === "tag-list"
+  ) {
     content = <TextTraitViewer trait={trait} rule={rule} />;
+  }
+
+  if (rule.ruleType === "gps") {
+    content = <GpsTraitViewer trait={trait} rule={rule} />;
   }
 
   if (!content) {
@@ -70,6 +81,10 @@ export function TraitEditor({ trait, rule, onChange }: EditTraitProps) {
 
   if (rule.ruleType === "text") {
     return <TextTraitEditor trait={trait} rule={rule} onChange={onChange} />;
+  }
+
+  if (rule.ruleType === "pick") {
+    return <PickTraitEditor trait={trait} rule={rule} onChange={onChange} />;
   }
 
   const fallbackTrait = {

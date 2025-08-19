@@ -1,4 +1,4 @@
-import { allListsLink } from "@/components/CommonNavLinks";
+import { allListsLink, editListLink } from "@/components/CommonNavLinks";
 import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -109,17 +109,16 @@ export function ListByIdPage({ list, queryKey }: ListByIdPageProps) {
     <PageContainer>
       <NavBar
         backLink={allListsLink("Back to Lists")}
-        forwardComponent={
-          <Label>
-            Edit
-            <Switch
-              checked={isEditing}
-              onCheckedChange={(checked) => setIsEditing(checked)}
-            />
-          </Label>
-        }
+        forwardLink={editListLink("Edit List", listId)}
       >
         <h1 className="text-2xl font-bold mb-4">{list.name}</h1>
+        <Label>
+          Edit items
+          <Switch
+            checked={isEditing}
+            onCheckedChange={(checked) => setIsEditing(checked)}
+          />
+        </Label>
       </NavBar>
 
       {isEditing && (
@@ -161,7 +160,7 @@ export function ListByIdPage({ list, queryKey }: ListByIdPageProps) {
             )}
           </li>
         ))}
-        <li className="grow flex flex-col justify-end">
+        <li className="grow flex flex-col justify-end sticky bottom-16 bg-white">
           <form
             className="flex"
             onSubmit={(e) => {
