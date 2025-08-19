@@ -1,4 +1,4 @@
-import type { EditTraitProps } from "@/components/Trait";
+import type { EditTraitProps } from "@/components/traits/TraitEditor";
 import { Label } from "@/components/ui/label";
 import { fromKeyValueString } from "@/lib/keyValueString";
 

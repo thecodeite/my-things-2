@@ -6,7 +6,9 @@ import {
 import { JsonDebug } from "@/components/JsonDebug";
 import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
-import { TraitEditor, type TraitProps, TraitViewer } from "@/components/Trait";
+import { TraitEditor } from "@/components/traits/TraitEditor";
+import { TraitViewer } from "@/components/traits/TraitViewer";
+import type { TraitProps } from "@/components/traits/trait-types";
 import { Card, CardContent } from "@/components/ui/card";
 import { graphql } from "@/graphql";
 import type { SingleListItemQuery } from "@/graphql/graphql";
