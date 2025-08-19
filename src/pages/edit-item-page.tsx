@@ -41,15 +41,15 @@ export const SingleListItemPageQuery = graphql(/* GraphQL */ `
   }
 `);
 
-interface ItemByIdProps {
-  result?: SingleListItemQuery;
-  mode: "view" | "edit";
+type EditList = NonNullable<SingleListItemQuery["list"]>;
+type EditListItem = NonNullable<EditList["listItem"]>;
+
+interface EditItemPageProps {
+  list: EditList;
+  listItem: EditListItem;
 }
 
-export function ItemByIdPage({ result, mode }: ItemByIdProps) {
-  const { list } = result ?? {};
-  const { listItem } = list ?? {};
-
+export function EditItemPage({ list, listItem }: EditItemPageProps) {
   const listId = list?.id ?? "";
   const itemId = listItem?.id ?? "";
 
@@ -69,9 +69,10 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
           listItem?.details?.find((detail) => detail.name === rule.backingName)
             ?.value ?? "";
       }
+
       const trait = {
         id: `trait:${rule.name}`,
-        mode,
+        mode: "edit",
         value,
 
         prompt: rule.prompt,
@@ -83,11 +84,7 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
           ruleType: rule.ruleType,
           data: rule.data ?? undefined,
         },
-        ...(mode === "edit"
-          ? {
-              onChange: makeOnChange(rule.name),
-            }
-          : {}),
+        onChange: makeOnChange(rule.name),
       };
       return props;
     },
@@ -103,34 +100,16 @@ export function ItemByIdPage({ result, mode }: ItemByIdProps) {
     {
       trait: descriptionAsTrait,
       rule: { ruleType: "text", data: "multi-line" },
-      ...(mode === "edit"
-        ? {
-            onChange: makeOnChange("description"),
-          }
-        : { onChange: undefined }),
+      onChange: makeOnChange("description"),
     },
     ...allFieldsWithoutDescription,
   ];
 
-  if (!list || !listItem) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <span className="text-gray-500">Loading...</span>
-      </div>
-    );
-  }
-
-  const backLink =
-    mode === "view"
-      ? viewListLink("Back to List", list.id)
-      : viewItemLink("Back to Item", list.id, itemId);
-
-  const forwardLink =
-    mode === "view" ? editItemLink("Edit Item", listId, itemId) : undefined;
+  const backLink = viewItemLink("Back to Item", list.id, itemId);
 
   return (
     <PageContainer>
-      <NavBar backLink={backLink} forwardLink={forwardLink}>
+      <NavBar backLink={backLink} forwardLink={undefined}>
         <h2>{list.name}</h2>
         <h1 className="text-2xl font-bold mb-4">{listItem.name}</h1>
       </NavBar>

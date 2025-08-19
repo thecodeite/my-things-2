@@ -6,8 +6,13 @@ import {
   unmakeEditable,
 } from "./makeEditable";
 
-export function useEditable<T extends CanMakeEditable>(target: T) {
-  const [editable, setEditable] = useState(() => makeEditable(target));
+export function useEditable<T extends CanMakeEditable>(target: T | (() => T)) {
+  const [editable, setEditable] = useState(() => {
+    if (typeof target === "function") {
+      return makeEditable(target());
+    }
+    return makeEditable(target);
+  });
 
   useEffect(() => {
     const detach = attachOnChange(editable, (newData) => {

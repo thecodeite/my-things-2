@@ -1,5 +1,7 @@
+import { LoadingBanner } from "@/components/LoadingBanner";
+import { NotFoundBanner } from "@/components/NotFoundBanner";
 import { execute, queryClient } from "@/graphql/execute";
-import { ItemByIdPage, SingleListItemPageQuery } from "@/pages/item-page";
+import { EditItemPage, SingleListItemPageQuery } from "@/pages/edit-item-page";
 import {
   AllListsCrumb,
   type Crumbs,
@@ -22,7 +24,18 @@ function EditItemByIdRouteComponent() {
 
   const { data } = useQuery(query(listId, itemId));
 
-  return <ItemByIdPage result={data} mode="edit" />;
+  if (!data) {
+    return <LoadingBanner />;
+  }
+
+  const list = data?.list;
+  const listItem = list?.listItem;
+
+  if (!list || !listItem) {
+    return <NotFoundBanner>List item not found</NotFoundBanner>;
+  }
+
+  return <EditItemPage list={list} listItem={listItem} />;
 }
 
 export const EditItemByIdRoute = (parentRoute: RootRoute) =>

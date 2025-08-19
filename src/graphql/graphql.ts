@@ -164,6 +164,14 @@ export type AllListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllListsQuery = { __typename?: 'Query', lists?: Array<{ __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null> | null };
 
+export type SingleListItemQueryVariables = Exact<{
+  listId: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+}>;
+
+
+export type SingleListItemQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, rules?: Array<{ __typename?: 'ListSpecRule', backing: string, backingName: string, data?: string | null, name: string, prompt: string, required: boolean, ruleType: string }> | null, listItem?: { __typename?: 'ListItem', id?: string | null, name?: string | null, description?: string | null, tags?: Array<string | null> | null, details?: Array<{ __typename?: 'NameValuePair', name: string, value: string }> | null } | null } | null };
+
 export type EditListWithItemsQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -194,14 +202,6 @@ export type SetListRuleMutationVariables = Exact<{
 
 
 export type SetListRuleMutation = { __typename?: 'Mutation', setListRule?: boolean | null };
-
-export type SingleListItemQueryVariables = Exact<{
-  listId: Scalars['String']['input'];
-  itemId: Scalars['String']['input'];
-}>;
-
-
-export type SingleListItemQuery = { __typename?: 'Query', list?: { __typename?: 'List', id: string, name: string, rules?: Array<{ __typename?: 'ListSpecRule', backing: string, backingName: string, data?: string | null, name: string, prompt: string, required: boolean, ruleType: string }> | null, listItem?: { __typename?: 'ListItem', id?: string | null, name?: string | null, description?: string | null, tags?: Array<string | null> | null, details?: Array<{ __typename?: 'NameValuePair', name: string, value: string }> | null } | null } | null };
 
 export type ListWithItemsQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -257,6 +257,33 @@ export const AllListsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AllListsQuery, AllListsQueryVariables>;
+export const SingleListItemDocument = new TypedDocumentString(`
+    query SingleListItem($listId: String!, $itemId: String!) {
+  list(id: $listId, listItemId: $itemId) {
+    id
+    name
+    rules {
+      backing
+      backingName
+      data
+      name
+      prompt
+      required
+      ruleType
+    }
+    listItem {
+      id
+      name
+      description
+      tags
+      details {
+        name
+        value
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SingleListItemQuery, SingleListItemQueryVariables>;
 export const EditListWithItemsDocument = new TypedDocumentString(`
     query EditListWithItems($id: String!) {
   list(id: $id) {
@@ -295,33 +322,6 @@ export const SetListRuleDocument = new TypedDocumentString(`
   )
 }
     `) as unknown as TypedDocumentString<SetListRuleMutation, SetListRuleMutationVariables>;
-export const SingleListItemDocument = new TypedDocumentString(`
-    query SingleListItem($listId: String!, $itemId: String!) {
-  list(id: $listId, listItemId: $itemId) {
-    id
-    name
-    rules {
-      backing
-      backingName
-      data
-      name
-      prompt
-      required
-      ruleType
-    }
-    listItem {
-      id
-      name
-      description
-      tags
-      details {
-        name
-        value
-      }
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<SingleListItemQuery, SingleListItemQueryVariables>;
 export const ListWithItemsDocument = new TypedDocumentString(`
     query ListWithItems($id: String!) {
   list(id: $id) {
