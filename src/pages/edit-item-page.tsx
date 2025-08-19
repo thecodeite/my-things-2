@@ -1,19 +1,15 @@
-import {
-  editItemLink,
-  viewItemLink,
-  viewListLink,
-} from "@/components/CommonNavLinks";
+import { viewItemLink } from "@/components/CommonNavLinks";
 import { JsonDebug } from "@/components/JsonDebug";
 import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
 import { TraitEditor } from "@/components/traits/TraitEditor";
-import { TraitViewer } from "@/components/traits/TraitViewer";
-import type { TraitProps } from "@/components/traits/trait-types";
+import type { Trait, TraitRule } from "@/components/traits/trait-types";
 import { Card, CardContent } from "@/components/ui/card";
 import { graphql } from "@/graphql";
 import type { SingleListItemQuery } from "@/graphql/graphql";
+import { useEditable } from "@/lib/useEditable";
 
-export const SingleListItemPageQuery = graphql(/* GraphQL */ `
+export const singleListItemPageQuery = graphql(/* GraphQL */ `
   query SingleListItem($listId: String!, $itemId: String!) {
     list(id: $listId, listItemId: $itemId) {
       id
@@ -44,22 +40,30 @@ export const SingleListItemPageQuery = graphql(/* GraphQL */ `
 type EditList = NonNullable<SingleListItemQuery["list"]>;
 type EditListItem = NonNullable<EditList["listItem"]>;
 
+const traitRuleForDescription: TraitRule = {
+  ruleType: "text",
+  data: "multi-line",
+};
+
 interface EditItemPageProps {
   list: EditList;
   listItem: EditListItem;
 }
 
+interface Meta {
+  trait: Trait;
+  traitRule: TraitRule;
+}
+
 export function EditItemPage({ list, listItem }: EditItemPageProps) {
-  const listId = list?.id ?? "";
   const itemId = listItem?.id ?? "";
 
-  const makeOnChange = (name: string) => (newValue: string) => {
-    // Handle trait change logic here if needed
-    console.log(`Trait ${name} changed to: ${newValue}`);
-  };
+  const [{ description }] = useEditable({
+    description: listItem.description ?? "",
+  });
 
-  const allFieldsWithoutDescription: TraitProps[] = (list?.rules ?? []).map(
-    (rule) => {
+  const [fieldsObject] = useEditable<Meta>(() => {
+    const fields = (list?.rules ?? []).map((rule) => {
       let value = "";
 
       if (rule.backing === "tag") {
@@ -70,40 +74,32 @@ export function EditItemPage({ list, listItem }: EditItemPageProps) {
             ?.value ?? "";
       }
 
-      const trait = {
-        id: `trait:${rule.name}`,
-        mode: "edit",
-        value,
+      const key = `rule:${rule.name}`;
 
-        prompt: rule.prompt,
-      };
-
-      const props: TraitProps = {
-        trait,
-        rule: {
-          ruleType: rule.ruleType,
-          data: rule.data ?? undefined,
+      const meta: Meta = {
+        trait: {
+          id: key,
+          prompt: rule.prompt,
+          value,
         },
-        onChange: makeOnChange(rule.name),
+        traitRule: {
+          ruleType: rule.ruleType,
+          data: rule.data ?? "",
+        },
       };
-      return props;
-    },
-  );
 
-  const descriptionAsTrait = {
-    id: "description",
-    value: listItem?.description ?? "",
-    prompt: "Description",
-  };
+      return {
+        value,
+        meta,
+      };
+    });
 
-  const allFields: TraitProps[] = [
-    {
-      trait: descriptionAsTrait,
-      rule: { ruleType: "text", data: "multi-line" },
-      onChange: makeOnChange("description"),
-    },
-    ...allFieldsWithoutDescription,
-  ];
+    const entries = fields.map((field) => [field.meta.trait.id, field]);
+
+    return Object.fromEntries(entries);
+  });
+
+  const fields = Object.entries(fieldsObject);
 
   const backLink = viewItemLink("Back to Item", list.id, itemId);
 
@@ -115,30 +111,36 @@ export function EditItemPage({ list, listItem }: EditItemPageProps) {
       </NavBar>
       <Card>
         <CardContent className="space-y-4 flex flex-col ">
-          {listItem.description && <p>{listItem.description}</p>}
-          {allFields.map((field) =>
-            field.onChange ? (
-              <TraitEditor
-                key={field.trait.id}
-                trait={field.trait}
-                rule={field.rule}
-                onChange={field.onChange}
-              />
-            ) : (
-              <TraitViewer
-                key={field.trait.id}
-                trait={field.trait}
-                rule={field.rule}
-                onChange={undefined}
-              />
-            ),
-          )}
+          Fields: {fields.length}
+          <TraitEditor
+            trait={{
+              id: "description",
+              prompt: "Description",
+              value: description.value,
+            }}
+            rule={traitRuleForDescription}
+            onChange={description.setValue}
+          />
+          {fields.map(([key, field]) => {
+            const meta = field.meta;
+            if (!meta) return "no meta";
+
+            return (
+              <div key={key}>
+                <TraitEditor
+                  trait={meta.trait}
+                  rule={meta.traitRule}
+                  onChange={field.setValue}
+                />
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
       <div>
         <JsonDebug data={list.listItem?.tags} title="Tags" />
         <JsonDebug data={list.listItem?.details} title="Details" />
-        <JsonDebug data={allFields} title="Fields" />
+        <JsonDebug data={fields} title="Fields" />
         <JsonDebug data={list} title="List" />
       </div>
     </PageContainer>

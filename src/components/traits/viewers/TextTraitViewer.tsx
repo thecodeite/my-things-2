@@ -1,4 +1,4 @@
-import type { ViewTraitProps } from "../TraitEditor";
+import type { ViewTraitProps } from "../TraitViewer";
 
 export function TextTraitViewer({ trait }: ViewTraitProps) {
   const { value } = trait;

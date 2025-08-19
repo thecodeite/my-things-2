@@ -1,5 +1,4 @@
 import { editItemLink, viewListLink } from "@/components/CommonNavLinks";
-import { JsonDebug } from "@/components/JsonDebug";
 import { NavBar } from "@/components/NavBar";
 import { PageContainer } from "@/components/PageContainer";
 import { TraitViewer } from "@/components/traits/TraitViewer";
@@ -8,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { graphql } from "@/graphql";
 import type { SingleListItemQuery } from "@/graphql/graphql";
 
-export const SingleListItemPageQuery = graphql(/* GraphQL */ `
+export const singleListItemPageQuery = graphql(/* GraphQL */ `
   query SingleListItem($listId: String!, $itemId: String!) {
     list(id: $listId, listItemId: $itemId) {
       id

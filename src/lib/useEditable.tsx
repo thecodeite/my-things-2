@@ -6,12 +6,16 @@ import {
   unmakeEditable,
 } from "./makeEditable";
 
-export function useEditable<T extends CanMakeEditable>(target: T | (() => T)) {
+export function useEditable<
+  M = Record<string, string>,
+  T extends CanMakeEditable<M> = CanMakeEditable<M>,
+>(target: T | (() => T)) {
   const [editable, setEditable] = useState(() => {
     if (typeof target === "function") {
-      return makeEditable(target());
+      const value = target();
+      return makeEditable<T, M>(value);
     }
-    return makeEditable(target);
+    return makeEditable<T, M>(target);
   });
 
   useEffect(() => {

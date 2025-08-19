@@ -1,7 +1,7 @@
 import { LoadingBanner } from "@/components/LoadingBanner";
 import { NotFoundBanner } from "@/components/NotFoundBanner";
 import { execute, queryClient } from "@/graphql/execute";
-import { EditItemPage, SingleListItemPageQuery } from "@/pages/edit-item-page";
+import { EditItemPage, singleListItemPageQuery } from "@/pages/edit-item-page";
 import {
   AllListsCrumb,
   type Crumbs,
@@ -14,7 +14,7 @@ import { type RootRoute, createRoute, useParams } from "@tanstack/react-router";
 
 const query = (listId: string, itemId: string) => ({
   queryKey: [`list:${listId}:item:${itemId}`],
-  queryFn: () => execute(SingleListItemPageQuery, { listId, itemId }),
+  queryFn: () => execute(singleListItemPageQuery, { listId, itemId }),
 });
 
 function EditItemByIdRouteComponent() {
