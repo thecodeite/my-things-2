@@ -16,6 +16,7 @@ import * as types from './graphql';
  */
 type Documents = {
     "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": typeof types.AllListsDocument,
+    "\n  mutation CreateList($listName: String!) {\n    createList( listName: $listName) {\n      id,\n      name\n    }\n  }\n": typeof types.CreateListDocument,
     "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        description\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n": typeof types.SingleListItemDocument,
     "\n  query EditListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      description\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      tags\n      \n    }\n  }\n": typeof types.EditListWithItemsDocument,
     "\n  mutation UpdateList(\n      $listId: String!\n      $name: String!\n      $description: String!\n      $tags: [String]!\n    ) {\n      updateList(\n        id: $listId\n        name: $name\n        description: $description\n        tags: $tags\n      )\n    }\n": typeof types.UpdateListDocument,
@@ -26,6 +27,7 @@ type Documents = {
 };
 const documents: Documents = {
     "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n": types.AllListsDocument,
+    "\n  mutation CreateList($listName: String!) {\n    createList( listName: $listName) {\n      id,\n      name\n    }\n  }\n": types.CreateListDocument,
     "\n  query SingleListItem($listId: String!, $itemId: String!) {\n    list(id: $listId, listItemId: $itemId) {\n      id\n      name\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      listItem {\n        id\n        name\n        description\n        tags\n        details {\n          name\n          value\n        }\n      }\n    }\n  }\n": types.SingleListItemDocument,
     "\n  query EditListWithItems($id: String!) {\n    list(id: $id) {\n      id\n      name\n      description\n      rules {\n        backing\n        backingName\n        data\n        name\n        prompt\n        required\n        ruleType\n      }\n      tags\n      \n    }\n  }\n": types.EditListWithItemsDocument,
     "\n  mutation UpdateList(\n      $listId: String!\n      $name: String!\n      $description: String!\n      $tags: [String]!\n    ) {\n      updateList(\n        id: $listId\n        name: $name\n        description: $description\n        tags: $tags\n      )\n    }\n": types.UpdateListDocument,
@@ -39,6 +41,10 @@ const documents: Documents = {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AllLists {\n    lists {\n      id\n      name\n      listItems {\n        id\n        name\n      }\n    }\n  }\n"): typeof import('./graphql').AllListsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateList($listName: String!) {\n    createList( listName: $listName) {\n      id,\n      name\n    }\n  }\n"): typeof import('./graphql').CreateListDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

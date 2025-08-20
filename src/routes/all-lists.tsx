@@ -8,8 +8,9 @@ import { AllListsPage, allListsPageQuery } from "@/pages/all-lists-page";
 import { AllListsCrumb, type Crumbs } from "@/types/crumb";
 import { useQuery } from "@tanstack/react-query";
 
+const queryKey = ["all-lists"];
 const query = () => ({
-  queryKey: ["all-lists"],
+  queryKey,
   queryFn: () => execute(allListsPageQuery),
 });
 
@@ -32,7 +33,7 @@ function AllListsRouteComponent() {
 
   return (
     <div>
-      <AllListsPage lists={lists} />
+      <AllListsPage lists={lists} queryKey={queryKey[0]} />
     </div>
   );
 }

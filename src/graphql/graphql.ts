@@ -164,6 +164,13 @@ export type AllListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllListsQuery = { __typename?: 'Query', lists?: Array<{ __typename?: 'List', id: string, name: string, listItems?: Array<{ __typename?: 'ListItem', id?: string | null, name?: string | null }> | null } | null> | null };
 
+export type CreateListMutationVariables = Exact<{
+  listName: Scalars['String']['input'];
+}>;
+
+
+export type CreateListMutation = { __typename?: 'Mutation', createList?: { __typename?: 'List', id: string, name: string } | null };
+
 export type SingleListItemQueryVariables = Exact<{
   listId: Scalars['String']['input'];
   itemId: Scalars['String']['input'];
@@ -257,6 +264,14 @@ export const AllListsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AllListsQuery, AllListsQueryVariables>;
+export const CreateListDocument = new TypedDocumentString(`
+    mutation CreateList($listName: String!) {
+  createList(listName: $listName) {
+    id
+    name
+  }
+}
+    `) as unknown as TypedDocumentString<CreateListMutation, CreateListMutationVariables>;
 export const SingleListItemDocument = new TypedDocumentString(`
     query SingleListItem($listId: String!, $itemId: String!) {
   list(id: $listId, listItemId: $itemId) {
